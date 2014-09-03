@@ -27,5 +27,22 @@ class ArrayUtil
         return result;
     } // concat
 
+    /**************************************************************************************
+     * Search an array of type T for an element and return that element's index
+     * 
+     * @param array the array to search
+     * @param element  the element to search for
+     * @return an int >=0 if element exists, -1 otherwise
+     */
+    public static <T> int indexOf(T [] array, T element){
+    	
+    	for(int i=0; i<array.length; i++){
+    		if(array[i].equals(element)){
+    			return i;
+    		}
+    	}
+    	
+    	return -1;
+    }
 } // ArrayUtil class
 

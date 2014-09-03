@@ -92,42 +92,43 @@ class MovieDB
         starsIn.save ();
         movieExec.save ();
         studio.save ();
-
+out.println("saved, printindex:");
         movieStar.printIndex ();
 
         //--------------------- project
-
+        out.println("project:");
+      
         out.println ();
         Table t_project = movie.project ("title year");
         t_project.print ();
 
         //--------------------- select
-
+        out.println("select:");
         out.println ();
         Table t_select = movie.select (t -> t[movie.col("title")].equals ("Star_Wars") &&
                                             t[movie.col("year")].equals (1977));
         t_select.print ();
 
         //--------------------- indexed select
-
+        out.println("INDEXED SELECT:");
         out.println ();
         Table t_iselect = movieStar.select (new KeyType ("Harrison_Ford"));
         t_iselect.print ();
 
         //--------------------- union
-
+        out.println("union:");
         out.println ();
         Table t_union = movie.union (cinema);
         t_union.print ();
 
         //--------------------- minus
-
+        out.println("minus:");
         out.println ();
         Table t_minus = movie.minus (cinema);
         t_minus.print ();
 
         //--------------------- join
-
+        out.println("join:");
         out.println ();
         Table t_join = movie.join ("studioName", "name", studio);
         t_join.print ();

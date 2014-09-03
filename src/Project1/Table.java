@@ -75,6 +75,7 @@ public class Table
      */  
     public Table (String _name, String [] _attribute, Class [] _domain, String [] _key)
     {
+    	out.println("table0 constructor");
         name      = _name;
         attribute = _attribute;
         domain    = _domain;
@@ -95,6 +96,7 @@ public class Table
     public Table (String _name, String [] _attribute, Class [] _domain, String [] _key,
                   List <Comparable []> _tuples)
     {
+    	out.println("table1 constructor");
         name      = _name;
         attribute = _attribute;
         domain    = _domain;
@@ -112,8 +114,9 @@ public class Table
      */
     public Table (String name, String attributes, String domains, String _key)
     {
-        this (name, attributes.split (" "), findClass (domains.split (" ")), _key.split(" "));
 
+        this (name, attributes.split (" "), findClass (domains.split (" ")), _key.split(" "));
+        out.println("table2 constructor");
         out.println ("DDL> create table " + name + " (" + attributes + ")");
     } // constructor
 
@@ -133,14 +136,54 @@ public class Table
     public Table project (String attributes)
     {
         out.println ("RA> " + name + ".project (" + attributes + ")");
-        String [] attrs     = attributes.split (" ");
-        Class []  colDomain = extractDom (match (attrs), domain);
-        String [] newKey    = (Arrays.asList (attrs).containsAll (Arrays.asList (key))) ? key : attrs;
+        String [] attrs     = attributes.split (" "); //col headers
+        Class []  colDomain = extractDom (match (attrs), domain); //col headers' classes
+        //if the current primary key(s) is in attrs, then use them, 
+        //otherwise make the new temp table's prim key all of attrs
+        String [] newKey    = (Arrays.asList (attrs).containsAll (Arrays.asList (key))) ? key : attrs; 
+       
+        /*debugging 
+        for(int i=0; i<attrs.length; i++){
+        	out.println(attrs[i]);
+        }
+        for(int i=0; i<colDomain.length; i++){
+        	out.println(colDomain[i]);
+        }
+        for(int i=0; i<newKey.length; i++){
+        	out.println(newKey[i]);
+        }
+        */
 
-        List <Comparable []> rows = null;
-
+        for(int i=0; i<tuples.size(); i++){
+        	out.println(i + ":");
+        	for(int j=0; j<tuples.get(i).length; j++){
+        		out.println("\t"+attribute[j]+": " + tuples.get(i)[j].toString());
+        	}
+        }
+        
+        List <Comparable []> rows = new ArrayList<> ();
+        //populate the rows with the requested tuples
+        //the requested tuples are members of the column attrs[i]
+        //we need to reference this tables static attribute str array for these values
+        String[] tempAttrs = new String[attrs.length];
+        
+        for(int i=0; i<tuples.size(); i++){
+        	Comparable tempRow[] = new Comparable[attrs.length];
+        	for(int j=0; j<attrs.length; j++){
+        		out.println("want to find the index of : " + attrs[j]);
+        		out.println("is: " + tuples.get(i)[ArrayUtil.indexOf(attribute, attrs[j])]);
+        		tempRow[j] = tuples.get(i)[ArrayUtil.indexOf(attribute, attrs[j])];
+        	}
+        	rows.add(tempRow);
+        }
+        for(int i=0; i<rows.size(); i++){
+        	out.println(i + ":");
+        	for(int j=0; j<rows.get(i).length; j++){
+        		out.println("\t"+attrs[j]+": " + rows.get(i)[j].toString());
+        	}
+        }
         //  T O   B E   I M P L E M E N T E D 
-
+        //pass table aa tempName, column headers, the class of each of the column headers, a primary key, and tuples
         return new Table (name + count++, attrs, colDomain, newKey, rows);
     } // project
 
