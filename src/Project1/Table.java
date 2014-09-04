@@ -141,49 +141,22 @@ public class Table
         //if the current primary key(s) is in attrs, then use them, 
         //otherwise make the new temp table's prim key all of attrs
         String [] newKey    = (Arrays.asList (attrs).containsAll (Arrays.asList (key))) ? key : attrs; 
-       
-        /*debugging 
-        for(int i=0; i<attrs.length; i++){
-        	out.println(attrs[i]);
-        }
-        for(int i=0; i<colDomain.length; i++){
-        	out.println(colDomain[i]);
-        }
-        for(int i=0; i<newKey.length; i++){
-        	out.println(newKey[i]);
-        }
-        */
-
-        for(int i=0; i<tuples.size(); i++){
-        	out.println(i + ":");
-        	for(int j=0; j<tuples.get(i).length; j++){
-        		out.println("\t"+attribute[j]+": " + tuples.get(i)[j].toString());
-        	}
-        }
-        
+           
         List <Comparable []> rows = new ArrayList<> ();
         //populate the rows with the requested tuples
         //the requested tuples are members of the column attrs[i]
-        //we need to reference this tables static attribute str array for these values
+        //we need to reference this tables static attribute string array for these values
         String[] tempAttrs = new String[attrs.length];
         
         for(int i=0; i<tuples.size(); i++){
         	Comparable tempRow[] = new Comparable[attrs.length];
         	for(int j=0; j<attrs.length; j++){
-        		out.println("want to find the index of : " + attrs[j]);
-        		out.println("is: " + tuples.get(i)[ArrayUtil.indexOf(attribute, attrs[j])]);
         		tempRow[j] = tuples.get(i)[ArrayUtil.indexOf(attribute, attrs[j])];
         	}
         	rows.add(tempRow);
         }
-        for(int i=0; i<rows.size(); i++){
-        	out.println(i + ":");
-        	for(int j=0; j<rows.get(i).length; j++){
-        		out.println("\t"+attrs[j]+": " + rows.get(i)[j].toString());
-        	}
-        }
-        //  T O   B E   I M P L E M E N T E D 
-        //pass table aa tempName, column headers, the class of each of the column headers, a primary key, and tuples
+      
+        //pass table a tempName, column headers, the class of each of the column headers, a primary key, and tuples
         return new Table (name + count++, attrs, colDomain, newKey, rows);
     } // project
 
@@ -198,10 +171,10 @@ public class Table
     public Table select (Predicate <Comparable []> predicate)
     {
         out.println ("RA> " + name + ".select (" + predicate + ")");
+      
+        List <Comparable []> rows = new ArrayList <> ();
 
-        List <Comparable []> rows = null;
-
-        //  T O   B E   I M P L E M E N T E D 
+        
 
         return new Table (name + count++, attribute, domain, key, rows);
     } // select
@@ -218,8 +191,8 @@ public class Table
         out.println ("RA> " + name + ".select (" + keyVal + ")");
 
         List <Comparable []> rows = null;
-
-        //  T O   B E   I M P L E M E N T E D 
+        
+        
 
         return new Table (name + count++, attribute, domain, key, rows);
     } // select
