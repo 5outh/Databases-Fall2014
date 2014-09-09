@@ -205,12 +205,12 @@ public class Table
      * @param table2  the rhs table in the union operation
      * @return  a table representing the union
      */
-    public Table union (Table table2)
+   public Table union (Table table2)
     {
         out.println ("RA> " + name + ".union (" + table2.name + ")");
         if (! compatible (table2)) return null;
 
-        List <Comparable []> rows = null;
+        List <Comparable []> rows = compareOperation(table2, "union");
 
         //  T O   B E   I M P L E M E N T E D 
 
@@ -231,12 +231,47 @@ public class Table
         out.println ("RA> " + name + ".minus (" + table2.name + ")");
         if (! compatible (table2)) return null;
 
-        List <Comparable []> rows = null;
+        List <Comparable []> rows = compareOperation(table2, "minus");
 
         //  T O   B E   I M P L E M E N T E D 
 
         return new Table (name + count++, attribute, domain, key, rows);
     } // minus
+
+    
+    public List<Comparable[]> compareOperation(Table table2, String operation){
+        List <Comparable[]> rows = new ArrayList<Comparable[]>();
+        
+        List <Comparable[]> outer = this.tuples;
+        List <Comparable[]> inner = table2.tuples;
+        if(operation == "union"){
+        	rows.addAll(this.tuples);
+        	inner = this.tuples;
+        	outer = table2.tuples;
+        }        
+        
+        for(int i = 0; i < outer.size(); i++){
+        	   boolean found = false;
+               Comparable[] outerTuple = outer.get(i);
+               for(int j = 0; j < inner.size(); j++){
+                      Comparable[] innerTuple = inner.get(j);              
+                      if(Arrays.equals(outerTuple, innerTuple)){
+                             found = true;
+                             break;
+                      }              
+               }
+               
+               if(found && operation == "intersection"){
+                   rows.add(outerTuple);
+               }
+               else if(!found && (operation == "minus" || operation == "union" )){
+            	 rows.add(outerTuple);
+               }
+               
+        }
+        return rows;
+    }
+       
 
     /************************************************************************************
      * Join this table and table2 by performing an equijoin.  Tuples from both tables
