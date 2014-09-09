@@ -170,11 +170,11 @@ public class Table
      */
     public Table select (Predicate <Comparable []> predicate)
     {
+        // NB. Keep the headers the same, but select the ones satisfying the 
+        // predicate(s)
         out.println ("RA> " + name + ".select (" + predicate + ")");
-      
-        List <Comparable []> rows = new ArrayList <> ();
-
-        
+        List <Comparable []> rows = 
+            tuples.stream().filter(predicate).collect(Collectors.toList());
 
         return new Table (name + count++, attribute, domain, key, rows);
     } // select
@@ -190,9 +190,9 @@ public class Table
     {
         out.println ("RA> " + name + ".select (" + keyVal + ")");
 
-        List <Comparable []> rows = null;
-        
-        
+        List<Comparable[]> rows = new ArrayList<>();
+        Comparable[] row = index.get(keyVal);
+        if(row != null) rows.add(row);
 
         return new Table (name + count++, attribute, domain, key, rows);
     } // select
