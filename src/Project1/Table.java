@@ -503,8 +503,13 @@ public class Table
      */
     private boolean typeCheck (Comparable [] t)
     { 
-        //  T O   B E   I M P L E M E N T E D 
-
+        for (Comparable [] cs : tuples){
+            for(int i = 0; i < cs.length; i++){
+                if(!domain[i].isAssignableFrom(cs[i].getClass())){
+                    return false;
+                }
+            }
+        }
         return true;
     } // typeCheck
 
