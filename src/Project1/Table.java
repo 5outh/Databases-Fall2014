@@ -294,7 +294,7 @@ public class Table
         String [] t_attrs = attributes1.split (" ");
         String [] u_attrs = attributes2.split (" ");
 
-        List <Comparable []> rows = null;
+        List <Comparable []> rows = new ArrayList<>();
 
         //  T O   B E   I M P L E M E N T E D 
 
