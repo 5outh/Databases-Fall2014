@@ -201,7 +201,7 @@ public class Table
      * Union this table and table2.  Check that the two tables are compatible.
      *
      * #usage movie.union (show)
-     *
+     * @author Deborah Brown
      * @param table2  the rhs table in the union operation
      * @return  a table representing the union
      */
@@ -222,7 +222,7 @@ public class Table
      * compatible.
      *
      * #usage movie.minus (show)
-     *
+     * @author Deborah Brown
      * @param table2  The rhs table in the minus operation
      * @return  a table representing the difference
      */
@@ -238,8 +238,17 @@ public class Table
         return new Table (name + count++, attribute, domain, key, rows);
     } // minus
 
-    
-    public List<Comparable[]> compareOperation(Table table2, String operation){
+    /************************************************************************************
+     * Compare the tables to each other, if the operation is minus, complete the relational algebra minus operation. 
+     * If the operation is union, complete the relational algebra union operation.
+     *
+     * #usage movie.compareOperation (show)
+     * @author Deborah Brown
+     * @param table2  The rhs table in the minus operation
+     * @param operation The string containing either the word 'union' or 'minus' specifiying which operation needs to be completed
+     * @return  a List<Comparable[]> representing either the difference or the union appropriately
+     */
+       public List<Comparable[]> compareOperation(Table table2, String operation){
         List <Comparable[]> rows = new ArrayList<Comparable[]>();
         
         List <Comparable[]> outer = this.tuples;
