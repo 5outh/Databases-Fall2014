@@ -167,13 +167,13 @@ public class Table
      *
      * #usage movie.select (t -> t[movie.col("year")].equals (1977))
      *
+     * @author Benjamin Kovach
      * @param predicate  the check condition for tuples
      * @return  a table with tuples satisfying the predicate
      */
     public Table select (Predicate <Comparable []> predicate)
     {
-        // NB. Keep the headers the same, but select the ones satisfying the 
-        // predicate(s)
+        // NB. Keep the headers the same, but select the ones satisfying the predicate(s)
         out.println ("RA> " + name + ".select (" + predicate + ")");
         List <Comparable []> rows = tuples.stream().filter(predicate).collect(Collectors.toList());
 
@@ -184,6 +184,7 @@ public class Table
      * Select the tuples satisfying the given key predicate (key = value).  Use an index
      * (Map) to retrieve the tuple with the given key value.
      *
+     * @author Benjamin Kovach
      * @param keyVal  the given key value
      * @return  a table with the tuple satisfying the key predicate
      */
@@ -283,7 +284,6 @@ public class Table
     }
 
     /************************************************************************************
-     * @author William Speegle
      * Join this table and table2 by performing an equijoin.  Tuples from both tables
      * are compared requiring attributes1 to equal attributes2.  Disambiguate attribute
      * names by append "2" to the end of any duplicate attribute name.
@@ -291,6 +291,7 @@ public class Table
      * #usage movie.join ("studioNo", "name", studio)
      * #usage movieStar.join ("name == s.name", starsIn)
      *
+     * @author William Speegle, Benjamin Kovach
      * @param attributes1  the attributes of this table to be compared (Foreign Key)
      * @param attributes2  the attributes of table2 to be compared (Primary Key)
      * @param table2      the rhs table in the join operation
@@ -308,7 +309,7 @@ public class Table
         int[] t_attr_indices = new int[t_attrs.length];
         int[] u_attr_indices = new int[u_attrs.length];
 
-        // assumes attributes1.length == attributes2.length
+        // fail if attributes1.length != attributes2.length
         try
         { 
             for(int i = 0; i < t_attrs.length; i++)
