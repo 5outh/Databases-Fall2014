@@ -325,11 +325,19 @@ public class Table
 
         List <Comparable []> rows = new ArrayList<>();
 
+
+
         List <Comparable[]> joins;
+
         for(int i = 0; i < this.tuples.size(); i++)
         {
+            // current tuple
             Comparable[] t = this.tuples.get(i);
+
+            // tuples to join t with in the resulting table.
             joins = new ArrayList<>();
+
+            // iterate over tuples and figure out which to join with
             for(int j = 0; j < table2.tuples.size(); j++)
             {
                 Comparable[] u = table2.tuples.get(j);
@@ -344,34 +352,35 @@ public class Table
                     }
                     add = true;
                 }
-                // if we get here, the t == u based on the criteria, so we add u to the list of
-                // tuples to join t with in the resulting table.
+                // t == u by the comparison
                 if(add)
                     joins.add(u);
             }
 
-            // Add the concatenation to the rows.
+            // join current tuple with all joinable tuples and add them to rows
             for(Comparable[] c : joins) 
             {
                 rows.add(ArrayUtil.concat(t, c));
             }
         }
 
-        String[] attrs = ArrayUtil.concat( attribute, table2.attribute );
+        String[] attrs = ArrayUtil.concat(attribute, table2.attribute);
         ArrayList<String> attrList = new ArrayList<String>(Arrays.asList( ArrayUtil.concat(attribute, table2.attribute)));
         
-        Class[]  dom   = ArrayUtil.concat( domain, table2.domain );
+        Class[] dom = ArrayUtil.concat( domain, table2.domain );
         ArrayList<Class> domList = new ArrayList<Class>( Arrays.asList( ArrayUtil.concat( domain, table2.domain ) ) );
 
         // remove attributes2 columns from final thing
         for(String attr : u_attrs)
         {
+            // index of things to remove from the list (duplicates)
             int idx = ArrayUtil.indexOf(attrs, attr);
 
+            // remove things at index in attributes list, domain, and each tuple
             attrList.remove(idx);
             domList.remove(idx);
-
-            for(int i = 0; i < rows.size(); i++) {
+            for(int i = 0; i < rows.size(); i++) 
+            {
                 ArrayList<Comparable> tupleList = new ArrayList<Comparable>( Arrays.asList( rows.get(i) ) );
                 tupleList.remove(idx);
                 Comparable[] tuple = new Comparable[tupleList.size()];
@@ -385,6 +394,7 @@ public class Table
             dom = domList.toArray(dom);
         }
 
+        // rename duplicate attributes that aren't joinable
         ArrayList<String> seenAttrs = new ArrayList();
 
         for(int i = 0; i < attrs.length; i++)
