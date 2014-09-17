@@ -303,12 +303,8 @@ public class Table
         String [] t_attrs = attributes1.split (" ");
         String [] u_attrs = attributes2.split (" ");
       
-
         List <Comparable []> rows = new ArrayList<>();
         
-        int t1_size = this.tuples.size();
-        int t2_size = table2.tuples.size();
-        int rowIndex = 0;
         int t1_attribute = 0;
         int t2_attribute = 0;
         
@@ -320,7 +316,8 @@ public class Table
                 t1_attribute = i;
             }
         }
-         for(int i =0; i < table2.attribute.length; i++)
+        
+        for(int i =0; i < table2.attribute.length; i++)
         {
             if(table2.attribute[i].equals(t_attrs[0]))
             {
@@ -328,44 +325,30 @@ public class Table
             }
         }
 
-         
-        if(t1_size < t2_size) //'this' table less attributes than table2
-        {
-            for(int i=0;i < t1_size; i++)
-            {
-                Comparable[] tuple1 = this.tuples.get(i);
-                for(int j = 0; j < t2_size;j++)
-                {
-                    Comparable[] tuple2 = table2.tuples.get(j);
-                    if(tuple1[t1_attribute].equals(tuple2[t2_attribute]))
-                    {
-                        Comparable[] temp = ArrayUtil.concat(tuple1, tuple2);
-                        rows.add(temp);
-                    }
-                }
-                
-            }
-        }
-        else //table 2 has equal or more entries than 'this' table
-        {
-            for(int i=0;i < t1_size; i++)
-            {
-                Comparable[] tuple1 = this.tuples.get(i);
-                for(int j = 0; j < t2_size;j++)
-                {
-                    Comparable[] tuple2 = table2.tuples.get(j);
-                    if(tuple1[t1_attribute].equals(tuple2[t2_attribute]))
-                    {
-                        Comparable[] temp = ArrayUtil.concat(tuple1, tuple2);
-                        rows.add(temp);
-                    }
-                }
-                
-            }
-        }
-        
+        //'this' table less attributes than table2 (default)
+        Table larger  = this;
+        Table smaller = table2;
 
-        
+        //table 2 has equal or more entries than 'this' table
+        if (this.tuples.size() < table2.tuples.size())
+        {
+            larger  = table2;
+            smaller = this;
+        }
+
+        for(int i=0;i < larger.tuples.size(); i++)
+        {
+            Comparable[] tuple1 = larger.tuples.get(i);
+            for(int j = 0; j < smaller.tuples.size() ;j++)
+            {
+                Comparable[] tuple2 = smaller.tuples.get(j);
+                if(tuple1[t1_attribute].equals(tuple2[t2_attribute]))
+                {
+                    Comparable[] temp = ArrayUtil.concat(tuple1, tuple2);
+                    rows.add(temp);
+                }
+            }
+        }
 
         return new Table (name + count++, ArrayUtil.concat (attribute, table2.attribute),
                                           ArrayUtil.concat (domain, table2.domain), key, rows);
