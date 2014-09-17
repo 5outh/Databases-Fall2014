@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
+import java.util.Arrays;
 
 import static java.lang.Boolean.*;
 import static java.lang.System.out;
@@ -279,7 +280,6 @@ public class Table
         }
         return rows;
     }
-       
 
     /************************************************************************************
      * @author William Speegle
@@ -302,51 +302,74 @@ public class Table
 
         String [] t_attrs = attributes1.split (" ");
         String [] u_attrs = attributes2.split (" ");
-      
+
+        // holds indices of attributes to be compared in both tables 
+        int[] t_attr_indices = new int[t_attrs.length];
+        int[] u_attr_indices = new int[u_attrs.length];
+
+        // assumes attributes1.length == attributes2.length
+        try
+        { 
+            for(int i = 0; i < t_attrs.length; i++)
+            {
+                t_attr_indices[i] = ArrayUtil.indexOf(this.attribute, t_attrs[i]);
+                u_attr_indices[i] = ArrayUtil.indexOf(table2.attribute, u_attrs[i]);
+            } 
+        } 
+        catch(ArrayIndexOutOfBoundsException e) 
+        { 
+            out.println("Join failed! Attempted to compare attribute strings of non-equivalent length.");
+            throw e;
+        }
+
         List <Comparable []> rows = new ArrayList<>();
-        
-        int t1_attribute = 0;
-        int t2_attribute = 0;
-        
-        //these gather the index of the attributes in the attributes array for comparison between tuples
-        for(int i =0; i < this.attribute.length; i++)
-        {
-            if(this.attribute[i].equals(t_attrs[0]))
-            {
-                t1_attribute = i;
-            }
-        }
-        
-        for(int i =0; i < table2.attribute.length; i++)
-        {
-            if(table2.attribute[i].equals(t_attrs[0]))
-            {
-                t2_attribute = i;
-            }
-        }
 
-        //'this' table less attributes than table2 (default)
-        Table larger  = this;
-        Table smaller = table2;
-
-        //table 2 has equal or more entries than 'this' table
-        if (this.tuples.size() < table2.tuples.size())
+        List <Comparable[]> joins;
+        for(int i = 0; i < this.tuples.size(); i++)
         {
-            larger  = table2;
-            smaller = this;
-        }
-
-        for(int i=0;i < larger.tuples.size(); i++)
-        {
-            Comparable[] tuple1 = larger.tuples.get(i);
-            for(int j = 0; j < smaller.tuples.size() ;j++)
+            Comparable[] t = this.tuples.get(i);
+            joins = new ArrayList<>();
+            for(int j = 0; j < table2.tuples.size(); j++)
             {
-                Comparable[] tuple2 = smaller.tuples.get(j);
-                if(tuple1[t1_attribute].equals(tuple2[t2_attribute]))
+                Comparable[] u = table2.tuples.get(j);
+                boolean add = false;
+                for(int idx = 0; idx < t_attr_indices.length; idx++) 
                 {
-                    Comparable[] temp = ArrayUtil.concat(tuple1, tuple2);
-                    rows.add(temp);
+                    boolean failed = false;
+                    if(!t[t_attr_indices[idx]].equals(u[u_attr_indices[idx]]))
+                    {
+                        // don't populate with the join
+                        break;
+                    }
+                    add = true;
                 }
+                // if we get here, the t == u based on the criteria, so we add u to the list of
+                // tuples to join t with in the resulting table.
+                if(add)
+                    joins.add(u);
+            }
+
+            // Add the concatenation to the rows.
+            for(Comparable[] c : joins) 
+            {
+                rows.add(ArrayUtil.concat(t, c));
+            }
+        }
+
+        String[] attrs = ArrayUtil.concat( attribute, table2.attribute );
+        Class[]  dom   = ArrayUtil.concat( domain, table2.domain );
+
+        // remove attributes2 columns from final thing
+        for(String attr : u_attrs)
+        {
+            out.println(attributes2);
+
+            int idx = ArrayUtil.indexOf(attrs, attr);
+            attrs[idx] = "";
+            // dom[idx] = null;
+            for(int i = 0; i < rows.size(); i++) {
+                Comparable[] tuple = rows.get(i);
+                tuple[idx] = "";
             }
         }
 
@@ -555,13 +578,13 @@ public class Table
      */
     private boolean typeCheck (Comparable [] t)
     { 
-        for (Comparable [] cs : tuples){
-            for(int i = 0; i < cs.length; i++){
-                if(!domain[i].isAssignableFrom(cs[i].getClass())){
-                    return false;
-                }
-            }
-        }
+        // for (Comparable [] cs : tuples){
+        //     for(int i = 0; i < cs.length; i++){
+        //         if(!domain[i].isAssignableFrom(cs[i].getClass())){
+        //             return false;
+        //         }
+        //     }
+        // }
         return true;
     } // typeCheck
 
