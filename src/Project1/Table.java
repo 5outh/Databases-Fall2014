@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 import java.util.Arrays;
+import java.util.Collection;
 
 import static java.lang.Boolean.*;
 import static java.lang.System.out;
@@ -357,24 +358,48 @@ public class Table
         }
 
         String[] attrs = ArrayUtil.concat( attribute, table2.attribute );
+        ArrayList<String> attrList = new ArrayList<String>(Arrays.asList( ArrayUtil.concat(attribute, table2.attribute)));
+        
         Class[]  dom   = ArrayUtil.concat( domain, table2.domain );
+        ArrayList<Class> domList = new ArrayList<Class>( Arrays.asList( ArrayUtil.concat( domain, table2.domain ) ) );
 
         // remove attributes2 columns from final thing
         for(String attr : u_attrs)
         {
-            out.println(attributes2);
-
             int idx = ArrayUtil.indexOf(attrs, attr);
-            attrs[idx] = "";
-            // dom[idx] = null;
+
+            attrList.remove(idx);
+            domList.remove(idx);
+
             for(int i = 0; i < rows.size(); i++) {
-                Comparable[] tuple = rows.get(i);
-                tuple[idx] = "";
+                ArrayList<Comparable> tupleList = new ArrayList<Comparable>( Arrays.asList( rows.get(i) ) );
+                tupleList.remove(idx);
+                Comparable[] tuple = new Comparable[tupleList.size()];
+                rows.set(i, tupleList.toArray(tuple) );
+            }
+
+            attrs = new String[attrList.size()];
+            attrs = attrList.toArray(attrs);
+
+            dom = new Class[domList.size()];
+            dom = domList.toArray(dom);
+        }
+
+        ArrayList<String> seenAttrs = new ArrayList();
+
+        for(int i = 0; i < attrs.length; i++)
+        {
+            if(seenAttrs.contains(attrs[i]))
+            {
+                attrs[i] = attrs[i] + "2";
+            }
+            else
+            {
+                seenAttrs.add(attrs[i]);
             }
         }
 
-        return new Table (name + count++, ArrayUtil.concat (attribute, table2.attribute),
-                                          ArrayUtil.concat (domain, table2.domain), key, rows);
+        return new Table (name + count++, attrs, dom, key, rows);
     } // join
 
     /************************************************************************************
