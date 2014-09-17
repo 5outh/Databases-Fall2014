@@ -173,8 +173,7 @@ public class Table
         // NB. Keep the headers the same, but select the ones satisfying the 
         // predicate(s)
         out.println ("RA> " + name + ".select (" + predicate + ")");
-        List <Comparable []> rows = 
-            tuples.stream().filter(predicate).collect(Collectors.toList());
+        List <Comparable []> rows = tuples.stream().filter(predicate).collect(Collectors.toList());
 
         return new Table (name + count++, attribute, domain, key, rows);
     } // select
@@ -283,6 +282,7 @@ public class Table
        
 
     /************************************************************************************
+     * @author William Speegle
      * Join this table and table2 by performing an equijoin.  Tuples from both tables
      * are compared requiring attributes1 to equal attributes2.  Disambiguate attribute
      * names by append "2" to the end of any duplicate attribute name.
@@ -290,8 +290,8 @@ public class Table
      * #usage movie.join ("studioNo", "name", studio)
      * #usage movieStar.join ("name == s.name", starsIn)
      *
-     * @param attribute1  the attributes of this table to be compared (Foreign Key)
-     * @param attribute2  the attributes of table2 to be compared (Primary Key)
+     * @param attributes1  the attributes of this table to be compared (Foreign Key)
+     * @param attributes2  the attributes of table2 to be compared (Primary Key)
      * @param table2      the rhs table in the join operation
      * @return  a table with tuples satisfying the equality predicate
      */
@@ -302,10 +302,70 @@ public class Table
 
         String [] t_attrs = attributes1.split (" ");
         String [] u_attrs = attributes2.split (" ");
+      
 
         List <Comparable []> rows = new ArrayList<>();
+        
+        int t1_size = this.tuples.size();
+        int t2_size = table2.tuples.size();
+        int rowIndex = 0;
+        int t1_attribute = 0;
+        int t2_attribute = 0;
+        
+        //these gather the index of the attributes in the attributes array for comparison between tuples
+        for(int i =0; i < this.attribute.length; i++)
+        {
+            if(this.attribute[i].equals(t_attrs[0]))
+            {
+                t1_attribute = i;
+            }
+        }
+         for(int i =0; i < table2.attribute.length; i++)
+        {
+            if(table2.attribute[i].equals(t_attrs[0]))
+            {
+                t2_attribute = i;
+            }
+        }
 
-        //  T O   B E   I M P L E M E N T E D 
+         
+        if(t1_size < t2_size) //'this' table less attributes than table2
+        {
+            for(int i=0;i < t1_size; i++)
+            {
+                Comparable[] tuple1 = this.tuples.get(i);
+                for(int j = 0; j < t2_size;j++)
+                {
+                    Comparable[] tuple2 = table2.tuples.get(j);
+                    if(tuple1[t1_attribute].equals(tuple2[t2_attribute]))
+                    {
+                        Comparable[] temp = ArrayUtil.concat(tuple1, tuple2);
+                        rows.add(temp);
+                    }
+                }
+                
+            }
+        }
+        else //table 2 has equal or more entries than 'this' table
+        {
+            for(int i=0;i < t1_size; i++)
+            {
+                Comparable[] tuple1 = this.tuples.get(i);
+                for(int j = 0; j < t2_size;j++)
+                {
+                    Comparable[] tuple2 = table2.tuples.get(j);
+                    if(tuple1[t1_attribute].equals(tuple2[t2_attribute]))
+                    {
+                        Comparable[] temp = ArrayUtil.concat(tuple1, tuple2);
+                        rows.add(temp);
+                    }
+                }
+                
+            }
+        }
+        
+
+        
 
         return new Table (name + count++, ArrayUtil.concat (attribute, table2.attribute),
                                           ArrayUtil.concat (domain, table2.domain), key, rows);
