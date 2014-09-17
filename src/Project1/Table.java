@@ -325,10 +325,7 @@ public class Table
         }
 
         List <Comparable []> rows = new ArrayList<>();
-
-
-
-        List <Comparable[]> joins;
+        List <Comparable[]> joins = new ArrayList<>();
 
         for(int i = 0; i < this.tuples.size(); i++)
         {
@@ -354,8 +351,7 @@ public class Table
                     add = true;
                 }
                 // t == u by the comparison
-                if(add)
-                    joins.add(u);
+                if(add) joins.add(u);
             }
 
             // join current tuple with all joinable tuples and add them to rows
