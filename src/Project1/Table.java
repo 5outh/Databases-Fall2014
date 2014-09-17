@@ -131,7 +131,7 @@ public class Table
      * Check whether the original key is included in the projection.
      *
      * #usage movie.project ("title year studioNo")
-     *
+     * @author William Pickard
      * @param attributes  the attributes to project onto
      * @return  a table of projected tuples
      */
