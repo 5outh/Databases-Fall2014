@@ -12,3 +12,5 @@ To compile and run:
 $ javac *.java
 $ java MovieDB
 ```
+
+Javadocs are stored in the docs directory.
