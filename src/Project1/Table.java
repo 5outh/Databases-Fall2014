@@ -214,8 +214,6 @@ public class Table
 
         List <Comparable []> rows = compareOperation(table2, "union");
 
-        //  T O   B E   I M P L E M E N T E D 
-
         return new Table (name + count++, attribute, domain, key, rows);
     } // union
 
