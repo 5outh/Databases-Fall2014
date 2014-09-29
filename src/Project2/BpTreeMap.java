@@ -89,10 +89,14 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     public Set <Map.Entry <K, V>> entrySet ()
     {
-        Set <Map.Entry <K, V>> enSet = new HashSet <> ();
-
-        //  T O   B E   I M P L E M E N T E D
-            
+        //Set <Map.Entry <K, V>> enSet = new HashSet <> ();
+        K firstkey = firstKey();
+        K lastkey = lastKey();
+        SortedMap<K, V> sortedmap = new TreeMap<K, V>();
+        traverse (root, 0, sortedmap, firstkey, lastkey);
+        //enSet.addAll(sortedmap.entrySet());
+        //return enSet;
+        return sortedmap.entrySet();
         return enSet;
     } // entrySet
 
@@ -170,14 +174,51 @@ public class BpTreeMap <K extends Comparable <K>, V>
     /********************************************************************************
      * Return the portion of the B+Tree map where key < toKey.
      * @return  the submap with keys in the range [firstKey, toKey)
+     * @author Deborah Brown
      */
     public SortedMap <K,V> headMap (K toKey)
     {
     	K firstkey = firstKey();
-        SortedMap<K, V> sortedmap = new SortedMap();
-
-        return null;
+    	//V fromV = find (firstkey, root);
+        SortedMap<K, V> sortedmap = new TreeMap<K, V>();
+        //V toV = find (toKey, root);
+        traverse (root, 0, sortedmap, firstkey, toKey); 
+        return sortedmap;
     } // headMap
+
+	/*
+	@author Deborah Brown
+	*/
+	
+    public Node lastNode (Node current, int level) 
+    {
+       if ( ! current.isLeaf) {
+    	   return lastNode((Node) current.ref [current.nKeys - 1], level + 1);
+       } 
+       else {
+    	   return current;
+       }
+       
+    }
+    /*
+    @author Deborah Brown
+    */
+    
+    public void traverse (Node current, int level, SortedMap<K,V> sortedmap, K fromKey, K toKey) 
+    {
+    	for (int i = 0; i < current.nKeys; i++) {
+    		if (( ((K)current.ref[i]).compareTo(fromKey) >= 0) &&
+    			( ((K)current.ref[i]).compareTo(toKey) <= 0))	
+    	        sortedmap.put(current.key[i], (V)current.ref[i]);
+    	}
+    	
+        if ( ! current.isLeaf) {
+            for (int i = 0; i <= current.nKeys; i++){ 
+            	traverse ((Node) current.ref [i], level + 1, sortedmap, fromKey, toKey);
+            }
+        } 
+       
+    }
 
     /********************************************************************************
      * Return the portion of the B+Tree map where fromKey <= key.
@@ -185,9 +226,10 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     public SortedMap <K,V> tailMap (K fromKey)
     {
-        //  T O   B E   I M P L E M E N T E D
-
-        return null;
+       K lastkey = lastKey();
+        SortedMap<K, V> sortedmap = new TreeMap<K, V>();
+        traverse (root, 0, sortedmap, fromKey, lastkey); 
+        return sortedmap;
     } // tailMap
 
     /********************************************************************************
@@ -197,9 +239,9 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     public SortedMap <K,V> subMap (K fromKey, K toKey)
     {
-        //  T O   B E   I M P L E M E N T E D
-
-        return null;
+        SortedMap<K, V> sortedmap = new TreeMap<K, V>();
+        traverse (root, 0, sortedmap, fromKey, toKey); 
+        return sortedmap;
     } // subMap
 
     /********************************************************************************
@@ -208,11 +250,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     public int size ()
     {
-        int sum = 0;
-
-        //  T O   B E   I M P L E M E N T E D
-
-        return  sum;
+       return totalKeys;
     } // size
 
     /********************************************************************************
@@ -316,6 +354,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
      * @param key  the key to insert
      * @param ref  the value/node to insert
      * @param n    the current node
+     * @author Deborah Brown
      */
     private Node split (K key, V ref, Node n)
     {
