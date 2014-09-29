@@ -122,23 +122,49 @@ public class BpTreeMap <K extends Comparable <K>, V>
     /********************************************************************************
      * Return the first (smallest) key in the B+Tree map.
      * @return  the first key in the B+Tree map.
+     * @author Deborah Brown
      */
     public K firstKey () 
     {
-        //  T O   B E   I M P L E M E N T E D
-
-        return null;
+    	if (size == 0){
+    		return error noSuchElementException;
+    	}
+    	if(size == 1){
+    		return root.key.get(0);
+    	}
+    	Node current = root;
+    	while(current.left != NULL){
+    		if (current.isLeaf()){
+    			return current.key.get(0);
+    		}
+    		else{
+    			current = current.left();
+    		}
+    	}
     } // firstKey
 
     /********************************************************************************
      * Return the last (largest) key in the B+Tree map.
      * @return  the last key in the B+Tree map.
+     * @author Deborah Brown
      */
     public K lastKey () 
     {
-        //  T O   B E   I M P L E M E N T E D
-
-        return null;
+        if(size == 0){
+        	return error NoSuchElementException;
+        }
+        if(size == 1){
+        	return root.key.get(numKeys - 1);
+        }
+        Node current = root;
+        while(current.right != NULL){
+        	if(current.isLeaf()){
+        		return current.key.get(numKeys - 1);
+        	}
+        	else{
+        		current = current.right();
+        	}
+        }
     } // lastKey
 
     /********************************************************************************
@@ -147,7 +173,8 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     public SortedMap <K,V> headMap (K toKey)
     {
-        //  T O   B E   I M P L E M E N T E D
+    	K firstkey = firstKey();
+        SortedMap<K, V> sortedmap = new SortedMap();
 
         return null;
     } // headMap
@@ -204,7 +231,9 @@ public class BpTreeMap <K extends Comparable <K>, V>
         for (int i = 0; i < n.nKeys; i++) out.print (n.key [i] + " . ");
         out.println ("]");
         if ( ! n.isLeaf) {
-            for (int i = 0; i <= n.nKeys; i++) print ((Node) n.ref [i], level + 1);
+            for (int i = 0; i <= n.nKeys; i++){ 
+            	print ((Node) n.ref [i], level + 1);
+            }
         } // if
 
         out.println ("-------------------------------------------");
@@ -253,6 +282,11 @@ public class BpTreeMap <K extends Comparable <K>, V>
             wedge (key, ref, n, n.nKeys);
         } else {
             Node sib = split (key, ref, n);
+            //push up the middle 
+            	//check if the parent is full
+            		//if parent is going to be full
+            			//push up the middle
+            				//recurse
 
         //  T O   B E   I M P L E M E N T E D
 
@@ -285,10 +319,66 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     private Node split (K key, V ref, Node n)
     {
-        out.println ("split not implemented yet");
-
-        //  T O   B E   I M P L E M E N T E D
-
+    	//finds the correct spot in the node
+    	Node tempn = new Node();
+    	if ( key < n.nkey[0]){
+    		int newIndexSpot = 0;
+    	}
+    	else if ( key > n.nkey[n.nKeys -1]){
+    		int newIndexSpot = nkeys;
+    	}
+    	else {
+	       for(int i = 0; i < n.nKeys; i++){
+	    	   if((key > n.nkey[i]) & key < n.nkey[i + 1]){
+	    		   int newIndexSpot = i + 1;
+	    	   }
+	       }
+	       
+	       //does temp node automatically get these attributes does it call constructor and go overwrite what I put here
+	       K []  tempKey = (K []) Array.newInstance (classK, ORDER)
+	       Object [] tempRef = (Node []) Array.newInstance (Node.class, ORDER);
+	       
+	       //creates bigger node with all values and inserted in right location
+	       for(int i = 0; i < order; i++){
+	    	   if(i = newIndexSpot){
+	    		   tempn.tempKey[newIndexSpot] = key;
+	    		   tempn.tempRef[newIndexSpot] = ref;
+	    	   }
+	    	   else if(i > newIndexSpot){
+	    		   tempn.tempKey[i] = n.key[i - 1];
+	    		   tempn.tempRef[i] = n.ref[i - 1];
+	    	   }
+	    	   else{
+	    		   tempn.tempKey[i] = n.key[i];
+	    		   tempn.tempRef[i] = n.ref[i];
+	    	   }
+	       }
+	       
+	      
+	       
+	       
+	       
+	       
+	       
+	       //this fills nodeToReturn with correct values and n with correct values
+	      nodeToReturn.nkeys = Math.ceil(order/2);
+	          for(int k = 0; k < order; k++){
+	    	  if(k < (order - nodeToReturn.nkeys)){
+	    		n.key[k] = tempn.tempKey[k];  
+	    	  }
+	    	   
+	    	  if(k >= (order - nodeToReturn.nkeys)){
+	    		  n.key[k] = null;
+	    		  for(int l = 0; l < nodeToReturn.nkeys; l++){
+	    			  nodeToReturn.key[l] = tempn.tempKey[k];
+	    		  }
+	    	  }
+	       }
+	    	
+	       
+	       
+    	}
+       
         return null;
     } // split
 
