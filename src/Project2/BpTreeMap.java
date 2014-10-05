@@ -39,6 +39,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
         int       nKeys;
         K []      key;
         Object [] ref;
+
         @SuppressWarnings("unchecked")
         Node (boolean _isLeaf)
         {
@@ -46,7 +47,6 @@ public class BpTreeMap <K extends Comparable <K>, V>
             nKeys  = 0;
             key    = (K []) Array.newInstance (classK, ORDER - 1);
             if (isLeaf) {
-                //ref = (V []) Array.newInstance (classV, ORDER);
                 ref = new Object [ORDER];
             } else {
                 ref = (Node []) Array.newInstance (Node.class, ORDER);
@@ -161,7 +161,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
             throw new NoSuchElementException();
         }
         Node ln = lastNode (root, 0);
-        K k = (K)ln.ref[ln.nKeys - 1];
+        K k = (K) ln.ref[ln.nKeys - 1];
         return k;
     }
     
@@ -173,7 +173,6 @@ public class BpTreeMap <K extends Comparable <K>, V>
        else {
            return current;
        }
-       
     }
     
     public void traverse (Node current, int level, SortedMap<K,V> sortedmap, K fromKey, K toKey) 
@@ -188,8 +187,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
             for (int i = 0; i <= current.nKeys; i++){ 
                 traverse ((Node) current.ref [i], level + 1, sortedmap, fromKey, toKey);
             }
-        } 
-       
+        }
     }
 
     /********************************************************************************
@@ -268,7 +266,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
     /********************************************************************************
      * Recursive helper function for finding a key in B+trees.
      * @param key  the key to find
-     * @param ney  the current node
+     * @param n  the current node
      */
     @SuppressWarnings("unchecked")
     private V find (K key, Node n)
@@ -307,9 +305,35 @@ public class BpTreeMap <K extends Comparable <K>, V>
             } // for
             wedge (key, ref, n, n.nKeys);
         } else {
-            Node sib = split (key, ref, n);
+            // Otherwise, split the bucket.
+            Node sib = split (key, ref, n); // Allocate new leaf and move half the bucket's elements to the new bucket.
+            Node newLeaf = new Node(true); // new leaf
+            
+            out.println("N Keys:");
+            for(int i = 0; i < n.key.length; i++) {
+                out.println(n.key[i]);
+            }
 
-        //  T O   B E   I M P L E M E N T E D
+            out.println("Sib Keys:");
+            for(int i = 0; i < sib.key.length; i++) {
+                out.println(sib.key[i]);
+            }
+
+            // Idea: Just go back up, recursively adding sib.key[0] to parent...
+            // if(parent.nKeys >= ORDER - 1)
+            // {
+            //     // Split, add the middle key (smallest in sibling) to the parent node until parent doesn't need to be split
+            // }
+
+            // TODO
+            // Insert the new leaf's smallest key and address into the parent.
+            
+            // ???? Grows from the root: Recursively build back up to root... ????
+            // wedge(sib.key[0], sib.ref[0], p, 0); // Insert into parent
+
+            // If the parent is full, split it too.
+                // Add the middle key to the parent node.
+            // Repeat until a parent is found that need not split.
 
         } // if
     } // insert
@@ -377,7 +401,6 @@ public class BpTreeMap <K extends Comparable <K>, V>
                tempKey[i] = n.key[i];
                tempRef[i] = n.ref[i];
                //tempRef[i] = java.util.Arrays.copyOfRange(n.ref, i, i);
-               
            }
        }
 
@@ -409,7 +432,8 @@ public class BpTreeMap <K extends Comparable <K>, V>
            }
        }    
         return nodeToReturn;
-} // split
+    } // split
+
     /********************************************************************************
      * The main method used for testing.
      * @param  the command-line arguments (args [0] gives number of keys to insert)
@@ -434,8 +458,6 @@ public class BpTreeMap <K extends Comparable <K>, V>
         out.println (sm3.toString());
         Set <Entry<Integer, Integer>> es = bpt.entrySet();
         out.println(es.toString());
-        
-        
     } // main
 
 } // BpTreeMap class

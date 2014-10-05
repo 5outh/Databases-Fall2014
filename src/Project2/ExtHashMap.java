@@ -85,13 +85,19 @@ public class ExtHashMap <K, V>
     /********************************************************************************
      * Return a set containing all the entries as pairs of keys and values.
      * @return  the set view of the map
+     * @author Ben Kovach
      */
     public Set <Map.Entry <K, V>> entrySet ()
     {
         Set <Map.Entry <K, V>> enSet = new HashSet <> ();
-
-        //  T O   B E   I M P L E M E N T E D
             
+        for(Bucket b : dir) {
+            for(int i = 0; i < b.nKeys; i++) {
+                Map.Entry<K, V> entry = new AbstractMap.SimpleEntry<K, V>(b.key[i], b.value[i]);
+                enSet.add(entry);
+            }
+        }
+
         return enSet;
     } // entrySet
 
@@ -99,13 +105,18 @@ public class ExtHashMap <K, V>
      * Given the key, look up the value in the hash table.
      * @param key  the key used for look up
      * @return  the value associated with the key
+     * @author Ben Kovach
      */
     public V get (Object key)
     {
         int    i = h (key);
         Bucket b = dir.get (i);
 
-        //  T O   B E   I M P L E M E N T E D
+        for(int j = 0; j < b.nKeys; j++) {
+            if(b.key[j].equals(key)) {
+                return b.value[j];
+            }
+        }
 
         return null;
     } // get
@@ -120,6 +131,11 @@ public class ExtHashMap <K, V>
     {
         int    i = h (key);
         Bucket b = dir.get (i);
+
+        if(b.nKeys >= SLOTS) {
+            mod *= 2;
+            // split
+        }
 
         //  T O   B E   I M P L E M E N T E D
 
@@ -143,7 +159,9 @@ public class ExtHashMap <K, V>
         out.println ("Hash Table (Extendable Hashing)");
         out.println ("-------------------------------------------");
 
-        //  T O   B E   I M P L E M E N T E D
+        for(Map.Entry<K,V> entry : this.entrySet()) {
+            out.println(entry.getKey() + " : " + entry.getValue());
+        }
 
         out.println ("-------------------------------------------");
     } // print
