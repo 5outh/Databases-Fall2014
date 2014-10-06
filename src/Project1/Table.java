@@ -9,6 +9,8 @@ import java.io.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
+import java.util.Arrays;
+import java.util.Collection;
 
 import static java.lang.Boolean.*;
 import static java.lang.System.out;
@@ -129,7 +131,7 @@ public class Table
      * Check whether the original key is included in the projection.
      *
      * #usage movie.project ("title year studioNo")
-     *
+     * @author William Pickard
      * @param attributes  the attributes to project onto
      * @return  a table of projected tuples
      */
@@ -165,13 +167,13 @@ public class Table
      *
      * #usage movie.select (t -> t[movie.col("year")].equals (1977))
      *
+     * @author Benjamin Kovach
      * @param predicate  the check condition for tuples
      * @return  a table with tuples satisfying the predicate
      */
     public Table select (Predicate <Comparable []> predicate)
     {
-        // NB. Keep the headers the same, but select the ones satisfying the 
-        // predicate(s)
+        // NB. Keep the headers the same, but select the ones satisfying the predicate(s)
         out.println ("RA> " + name + ".select (" + predicate + ")");
         List <Comparable []> rows = tuples.stream().filter(predicate).collect(Collectors.toList());
 
@@ -182,6 +184,7 @@ public class Table
      * Select the tuples satisfying the given key predicate (key = value).  Use an index
      * (Map) to retrieve the tuple with the given key value.
      *
+     * @author Benjamin Kovach
      * @param keyVal  the given key value
      * @return  a table with the tuple satisfying the key predicate
      */
@@ -200,7 +203,7 @@ public class Table
      * Union this table and table2.  Check that the two tables are compatible.
      *
      * #usage movie.union (show)
-     *
+     * @author Deborah Brown
      * @param table2  the rhs table in the union operation
      * @return  a table representing the union
      */
@@ -211,8 +214,6 @@ public class Table
 
         List <Comparable []> rows = compareOperation(table2, "union");
 
-        //  T O   B E   I M P L E M E N T E D 
-
         return new Table (name + count++, attribute, domain, key, rows);
     } // union
 
@@ -221,7 +222,7 @@ public class Table
      * compatible.
      *
      * #usage movie.minus (show)
-     *
+     * @author Deborah Brown
      * @param table2  The rhs table in the minus operation
      * @return  a table representing the difference
      */
@@ -237,8 +238,17 @@ public class Table
         return new Table (name + count++, attribute, domain, key, rows);
     } // minus
 
-    
-    public List<Comparable[]> compareOperation(Table table2, String operation){
+    /************************************************************************************
+     * Compare the tables to each other, if the operation is minus, complete the relational algebra minus operation. 
+     * If the operation is union, complete the relational algebra union operation.
+     *
+     * #usage movie.compareOperation (show)
+     * @author Deborah Brown
+     * @param table2  The rhs table in the minus operation
+     * @param operation The string containing either the word 'union' or 'minus' specifiying which operation needs to be completed
+     * @return  a List<Comparable[]> representing either the difference or the union appropriately
+     */
+       public List<Comparable[]> compareOperation(Table table2, String operation){
         List <Comparable[]> rows = new ArrayList<Comparable[]>();
         
         List <Comparable[]> outer = this.tuples;
@@ -270,10 +280,8 @@ public class Table
         }
         return rows;
     }
-       
 
     /************************************************************************************
-     * @author William Speegle
      * Join this table and table2 by performing an equijoin.  Tuples from both tables
      * are compared requiring attributes1 to equal attributes2.  Disambiguate attribute
      * names by append "2" to the end of any duplicate attribute name.
@@ -281,6 +289,7 @@ public class Table
      * #usage movie.join ("studioNo", "name", studio)
      * #usage movieStar.join ("name == s.name", starsIn)
      *
+     * @author William Speegle, Benjamin Kovach
      * @param attributes1  the attributes of this table to be compared (Foreign Key)
      * @param attributes2  the attributes of table2 to be compared (Primary Key)
      * @param table2      the rhs table in the join operation
@@ -293,73 +302,109 @@ public class Table
 
         String [] t_attrs = attributes1.split (" ");
         String [] u_attrs = attributes2.split (" ");
-      
+
+        // holds indices of attributes to be compared in both tables 
+        int[] t_attr_indices = new int[t_attrs.length];
+        int[] u_attr_indices = new int[u_attrs.length];
+
+        // fail if attributes1.length != attributes2.length
+        try
+        { 
+            for(int i = 0; i < t_attrs.length; i++)
+            {
+                t_attr_indices[i] = ArrayUtil.indexOf(this.attribute, t_attrs[i]);
+                u_attr_indices[i] = ArrayUtil.indexOf(table2.attribute, u_attrs[i]);
+            } 
+        } 
+        catch(ArrayIndexOutOfBoundsException e) 
+        { 
+            out.println("Join failed! Attempted to compare attribute strings of non-equivalent length.");
+            throw e;
+        }
 
         List <Comparable []> rows = new ArrayList<>();
-        
-        int t1_size = this.tuples.size();
-        int t2_size = table2.tuples.size();
-        int rowIndex = 0;
-        int t1_attribute = 0;
-        int t2_attribute = 0;
-        
-        //these gather the index of the attributes in the attributes array for comparison between tuples
-        for(int i =0; i < this.attribute.length; i++)
-        {
-            if(this.attribute[i].equals(t_attrs[0]))
-            {
-                t1_attribute = i;
-            }
-        }
-         for(int i =0; i < table2.attribute.length; i++)
-        {
-            if(table2.attribute[i].equals(t_attrs[0]))
-            {
-                t2_attribute = i;
-            }
-        }
+        List <Comparable[]> joins = new ArrayList<>();
 
-         
-        if(t1_size < t2_size) //'this' table less attributes than table2
+        for(int i = 0; i < this.tuples.size(); i++)
         {
-            for(int i=0;i < t1_size; i++)
+            // current tuple
+            Comparable[] t = this.tuples.get(i);
+
+            // tuples to join t with in the resulting table.
+            joins = new ArrayList<>();
+
+            // iterate over tuples and figure out which to join with
+            for(int j = 0; j < table2.tuples.size(); j++)
             {
-                Comparable[] tuple1 = this.tuples.get(i);
-                for(int j = 0; j < t2_size;j++)
+                Comparable[] u = table2.tuples.get(j);
+                boolean add = false;
+                for(int idx = 0; idx < t_attr_indices.length; idx++) 
                 {
-                    Comparable[] tuple2 = table2.tuples.get(j);
-                    if(tuple1[t1_attribute].equals(tuple2[t2_attribute]))
+                    boolean failed = false;
+                    if(!t[t_attr_indices[idx]].equals(u[u_attr_indices[idx]]))
                     {
-                        Comparable[] temp = ArrayUtil.concat(tuple1, tuple2);
-                        rows.add(temp);
+                        // don't populate with the join
+                        break;
                     }
+                    add = true;
                 }
-                
+                // t == u by the comparison
+                if(add) joins.add(u);
             }
-        }
-        else //table 2 has equal or more entries than 'this' table
-        {
-            for(int i=0;i < t1_size; i++)
+
+            // join current tuple with all joinable tuples and add them to rows
+            for(Comparable[] c : joins) 
             {
-                Comparable[] tuple1 = this.tuples.get(i);
-                for(int j = 0; j < t2_size;j++)
-                {
-                    Comparable[] tuple2 = table2.tuples.get(j);
-                    if(tuple1[t1_attribute].equals(tuple2[t2_attribute]))
-                    {
-                        Comparable[] temp = ArrayUtil.concat(tuple1, tuple2);
-                        rows.add(temp);
-                    }
-                }
-                
+                rows.add(ArrayUtil.concat(t, c));
             }
         }
-        
 
+        String[] attrs = ArrayUtil.concat(attribute, table2.attribute);
+        ArrayList<String> attrList = new ArrayList<String>(Arrays.asList( ArrayUtil.concat(attribute, table2.attribute)));
         
+        Class[] dom = ArrayUtil.concat( domain, table2.domain );
+        ArrayList<Class> domList = new ArrayList<Class>( Arrays.asList( ArrayUtil.concat( domain, table2.domain ) ) );
 
-        return new Table (name + count++, ArrayUtil.concat (attribute, table2.attribute),
-                                          ArrayUtil.concat (domain, table2.domain), key, rows);
+        // remove attributes2 columns from final thing
+        for(String attr : u_attrs)
+        {
+            // index of things to remove from the list (duplicates)
+            int idx = ArrayUtil.indexOf(attrs, attr);
+
+            // remove things at index in attributes list, domain, and each tuple
+            attrList.remove(idx);
+            domList.remove(idx);
+            for(int i = 0; i < rows.size(); i++) 
+            {
+                ArrayList<Comparable> tupleList = new ArrayList<Comparable>( Arrays.asList( rows.get(i) ) );
+                tupleList.remove(idx);
+                Comparable[] tuple = new Comparable[tupleList.size()];
+                rows.set(i, tupleList.toArray(tuple) );
+            }
+
+            attrs = new String[attrList.size()];
+            attrs = attrList.toArray(attrs);
+
+            dom = new Class[domList.size()];
+            dom = domList.toArray(dom);
+        }
+
+        // rename duplicate attributes that aren't joinable
+        ArrayList<String> seenAttrs = new ArrayList();
+
+        for(int i = 0; i < attrs.length; i++)
+        {
+            if(seenAttrs.contains(attrs[i]))
+            {
+                attrs[i] = attrs[i] + "2";
+            }
+            else
+            {
+                seenAttrs.add(attrs[i]);
+            }
+        }
+
+        return new Table (name + count++, attrs, dom, key, rows);
     } // join
 
     /************************************************************************************
@@ -563,13 +608,13 @@ public class Table
      */
     private boolean typeCheck (Comparable [] t)
     { 
-        for (Comparable [] cs : tuples){
-            for(int i = 0; i < cs.length; i++){
-                if(!domain[i].isAssignableFrom(cs[i].getClass())){
-                    return false;
-                }
-            }
-        }
+        // for (Comparable [] cs : tuples){
+        //     for(int i = 0; i < cs.length; i++){
+        //         if(!domain[i].isAssignableFrom(cs[i].getClass())){
+        //             return false;
+        //         }
+        //     }
+        // }
         return true;
     } // typeCheck
 

@@ -92,7 +92,7 @@ class MovieDB
         starsIn.save ();
         movieExec.save ();
         studio.save ();
-out.println("saved, printindex:");
+        out.println("saved, printindex:");
         movieStar.printIndex ();
 
         //--------------------- project
