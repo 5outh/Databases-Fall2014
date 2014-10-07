@@ -83,26 +83,35 @@ public class BpTreeMap <K extends Comparable <K>, V>
         // Get the left pointer from a key
         public Object leftPointer(K k) {
             int idx = Arrays.binarySearch(key, k);
-            if(idx == -1) {
-                return null;
-            }
+            if(idx == -1) return null;
             return ref[idx];
         }
 
         // Get the right pointer from a key
         public Object rightPointer(K k) {
             int idx = Arrays.binarySearch(key, k);
-            if(idx == -1) {
-                return null;
-            }
+            if(idx == -1) return null;
             return ref[idx + 1];
         }
 
+        // Set left pointer for key
+        public void pointLeft(K k, Object o) {
+            int idx = Arrays.binarySearch(key, k);
+            if(idx == -1) return;
+            ref[idx] = o;
+        }
+
+        // Set right pointer for key
+        public void pointRight(K k, Object o) {
+            int idx = Arrays.binarySearch(key, k);
+            if(idx == -1) return;
+            ref[idx + 1] = o;
+        }
     } // Node inner class
 
     /** The root of the B+Tree
      */
-    private final Node root;
+    private Node root;
 
     /** The counter for the number nodes accessed (for performance testing).
      */
@@ -332,9 +341,17 @@ public class BpTreeMap <K extends Comparable <K>, V>
     } // find
 
 
-    // Insert a value into the root of the tree
-    private void insertRoot(K key, V ref, Node n) {
-
+    // Insert a value into the root of the tree (handles splitting)
+    private void insertRoot(K key, V ref) {
+        if(root.nKeys >= ORDER - 1) {
+            Node newRight = split(key, ref, root);
+            Node newRoot = new Node(false);
+            K rootKey = newRight.key[0]; 
+            newRoot.key[0] = rootKey;
+            newRoot.pointLeft(rootKey, root);
+            newRoot.pointRight(rootKey, newRight);
+            root = newRoot;
+        }
     }
 
     // Insert a k/v pair into an inner node 
