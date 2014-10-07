@@ -52,6 +52,31 @@ public class BpTreeMap <K extends Comparable <K>, V>
                 ref = (Node []) Array.newInstance (Node.class, ORDER);
             } // if
         } // constructor
+
+        // Remove first element of a node
+        public void removeFirst() {
+
+            // Use list interface to easily remove first element
+            List<K> keyList = Arrays.asList(this.key);
+            List<Object> refList = Arrays.asList(this.ref);
+            keyList.remove(0); refList.remove(0);
+
+            // Reset lists
+            key = (K []) Array.newInstance (classK, ORDER - 1);
+            if (isLeaf) {
+                ref = new Object [ORDER];
+            } else {
+                ref = (Node []) Array.newInstance (Node.class, ORDER);
+            }
+
+            for(int i = 0; i < keyList.size(); i++) {
+                this.key[i] = keyList.get(i);
+            }
+
+            for(int i = 0; i < refList.size(); i++) {
+                this.ref[i] = refList.get(i);
+            }
+        }
     } // Node inner class
 
     /** The root of the B+Tree
@@ -292,9 +317,52 @@ public class BpTreeMap <K extends Comparable <K>, V>
      * @param n    the current node
      * @param p    the parent node
      */
+    // @TODO: Fix type errors with V/Object for refs
     private Map.Entry<K,V> insert (K key, V ref, Node n, Node p)
     {
+        for(int i = 0; i < n.nKeys; i++) {
+            K curKey = n.key[i];
+            if(key.compareTo(curKey) <= 0) {
+                if(n.isLeaf) {
+                    // proper key to insert into
+                    if(n.nKeys >= ORDER - 1) {
+                        // Must split!
+                        Node splitNode = split(key, ref, n);
+                        // Need to insert min value from split leaf into parent.
+                        return new AbstractMap.SimpleEntry<K,V>(splitNode.key[0], splitNode.ref[0]);
+                    } else {
+                        // there is space; wedge key/val pair in
+                        wedgeOrdered(key, ref, n);
+                        return null;
+                    }
+                } else {
+                    // Insert into root and check if it overflows
+                    Map.Entry<K,V> overflow = insert(key, ref, n.ref[i], n);
+                    
+                    // If we have something to insert, insert it (but we're not a leaf!)
+                    if (overflow != null) {
+                        // Need to propagate overflow!
+                        if(n.nKeys >= ORDER - 1) {
+                            Node splitNode = split(overflow.getKey(), overflow.getValue(), n);
+                            K newKey = splitNode.key[0]; V newRef = splitNode.ref[0];
+                            // Remove first element of split node
+                            splitNode.removeFirst();
+                            // Return overflow
+                            return new AbstractMap.SimpleEntry<K,V>(newKey, newRef);
+                        } else {
+                            // If there is space, just wedge the key/value pair in (no overflow)
+                            wedgeOrdered(key, ref, n);
+                            return null;
+                        }
+                    }
+                }
+            }
+        }
 
+        if(n.equals(this.root)) {
+            // wedgeOrdered(key, ref, n, i);
+        }
+        // Map.Entry<K, V> entry = new AbstractMap.SimpleEntry<K, V>(key, ref);
     }
 
     /********************************************************************************
@@ -314,6 +382,18 @@ public class BpTreeMap <K extends Comparable <K>, V>
         n.ref [i] = ref;
         n.nKeys++;
     } // wedge
+
+    /**
+     * Wedge a value into a node in proper order
+     */
+    private void wedgeOrdered(K key, V ref, Node n) {
+        Node current = n;
+        int i = 0;
+        while(current.key[i].compareTo(key) < 0) {
+            i++;
+        }
+        wedge(key, ref, n, i);
+    }
 
     /********************************************************************************
      * Split node n and return the newly created node.
