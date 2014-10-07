@@ -210,10 +210,10 @@ public class ExtHashMap <K, V>
     public void split(Bucket b, int index){
         //Increase the mod function and Htable, then call doubleDir to double the directory size
         mod *= 2;
-        incrementHTable();
         doubleDir();
-        int newBucketIndex = index + mod/2;
-        dir.add(newBucketIndex, this.hTable.get(hTable.size() - 1));
+        Bucket bucket = incrementHTable();
+        int newBucketIndex = hTable.indexOf(bucket);
+        dir.add(newBucketIndex, this.hTable.get(newBucketIndex));
         
         //Re-hash all the values in the bucket
         for(int i=0; i<b.nKeys; i++){
@@ -229,14 +229,16 @@ public class ExtHashMap <K, V>
      * Add one empty bucket to the hash table
      * @author Will Pickard
      */
-    public void incrementHTable(){
+    public Bucket incrementHTable(){
     	ArrayList<Bucket> l = new ArrayList<Bucket>(hTable.size() + 1);
     	for(int i=0; i<hTable.size(); i++){
     		l.add(i, hTable.get(i));
     	}
-    	l.add(new Bucket());
+        Bucket bucket = new Bucket();
+    	l.add(bucket);
     	hTable = l;
         nBuckets++;
+        return bucket;
     }
     /*******************************
      * Double the dir structure, creating n many empty buckets, where n is the previous size

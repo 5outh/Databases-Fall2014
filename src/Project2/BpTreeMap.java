@@ -292,51 +292,10 @@ public class BpTreeMap <K extends Comparable <K>, V>
      * @param n    the current node
      * @param p    the parent node
      */
-    private void insert (K key, V ref, Node n, Node p)
+    private Map.Entry<K,V> insert (K key, V ref, Node n, Node p)
     {
-        if (n.nKeys < ORDER - 1) {
-            for (int i = 0; i < n.nKeys; i++) {
-                K k_i = n.key [i];
-                if (key.compareTo (k_i) < 0) {
-                    wedge (key, ref, n, i);
-                } else if (key.equals (k_i)) {
-                    out.println ("BpTreeMap:insert: attempt to insert duplicate key = " + key);
-                } // if
-            } // for
-            wedge (key, ref, n, n.nKeys);
-        } else {
-            // Otherwise, split the bucket.
-            Node sib = split (key, ref, n); // Allocate new leaf and move half the bucket's elements to the new bucket.
-            Node newLeaf = new Node(true); // new leaf
-            
-            out.println("N Keys:");
-            for(int i = 0; i < n.key.length; i++) {
-                out.println(n.key[i]);
-            }
 
-            out.println("Sib Keys:");
-            for(int i = 0; i < sib.key.length; i++) {
-                out.println(sib.key[i]);
-            }
-
-            // Idea: Just go back up, recursively adding sib.key[0] to parent...
-            // if(parent.nKeys >= ORDER - 1)
-            // {
-            //     // Split, add the middle key (smallest in sibling) to the parent node until parent doesn't need to be split
-            // }
-
-            // TODO
-            // Insert the new leaf's smallest key and address into the parent.
-            
-            // ???? Grows from the root: Recursively build back up to root... ????
-            // wedge(sib.key[0], sib.ref[0], p, 0); // Insert into parent
-
-            // If the parent is full, split it too.
-                // Add the middle key to the parent node.
-            // Repeat until a parent is found that need not split.
-
-        } // if
-    } // insert
+    }
 
     /********************************************************************************
      * Wedge the key-ref pair into node n.
