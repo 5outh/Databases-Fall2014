@@ -54,11 +54,14 @@ public class BpTreeMap <K extends Comparable <K>, V>
         } // constructor
 
         // Remove first element of a node
-        public void removeFirst() {
+        public K removeFirst() {
 
+            K k = null;
             // Use list interface to easily remove first element
             List<K> keyList = Arrays.asList(this.key);
             List<Object> refList = Arrays.asList(this.ref);
+            k = keyList.get(0);
+
             keyList.remove(0); refList.remove(0);
 
             // Reset lists
@@ -78,6 +81,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
             }
 
             this.nKeys--;
+            return k;
         }
 
         // insert a key into the node
@@ -118,7 +122,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
                 return false;
             } else {
                 this.insertKey(k);
-                this.pointLeft(k, v);
+                this.pointRight(k, v);
                 return true;
             }
         }
@@ -130,7 +134,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
                 return false;
             } else {
                 this.insertKey(k);
-                this.pointLeft(k, n);
+                this.pointRight(k, n);
                 return true;
             }
         }
@@ -414,8 +418,39 @@ public class BpTreeMap <K extends Comparable <K>, V>
 
     // Insert a k/v pair into an inner node
     // Assumption: n is an inner node 
-    private void insertInner(K key, Node ref, Node n) {
+    private Map.Entry<K,Node> insertInner(K k, V ref, Node n) {
+        // Pointer we want to follow to find leaf
+        Node ptrToFollow = null;
+        
+        // If we have a leaf, defer to insertLeaf
+        if(n.isLeaf) {
+            return insertLeaf(k, ref, n);
+        }
 
+        for(int i = 0; i < n.nKeys - 1; i++) {
+            if( i == n.nKeys - 1 
+                || (k.compareTo(n.key[i]) >= 0 && k.compareTo(n.key[i+1]) <= 0) ) {
+                // k >= key[i] and k <= keys[i+1]
+                // Go right from this location
+                ptrToFollow = (Node) n.ref[i + 1];
+            }
+        }
+
+        Map.Entry<K,Node> overflow = insertInner(k, ref, ptrToFollow); 
+        if(overflow != null) {
+            // If the inner node is full, have to split again
+            if(n.nKeys >= ORDER - 1) {
+                Node rightNode = split(k, ref, n);
+                K newKey = rightNode.removeFirst();
+                // Return the first element from the right node of the split, but remove from inner node.
+                return new AbstractMap.SimpleEntry(newKey, rightNode);
+            // Otherwise, we just insert it.
+            } else {
+                n.insertKeyNode(overflow.getKey(), overflow.getValue());
+            }
+        }
+        // Everything's good
+        return null;
     }
 
     // Assumption: n is a leaf node
@@ -439,18 +474,25 @@ public class BpTreeMap <K extends Comparable <K>, V>
      * @param ref  the value/node to insert
      * @param n    the current node
      * @param p    the parent node
+     * @author Ben Kovach
      */
     private Map.Entry<K,Node> insert (K key, V ref, Node n, Node p)
     {
         if(n == root && root.isLeaf) {
             // Insert into the root since it's the only element
             insertRoot(key, ref);
+            return null;
         } else if(n.isLeaf) {
-            // n is a leaf, insert into it
+            // n is a leaf, insert into it. return whatever insertLeaf does.
+            return insertLeaf(key, ref, n);
         } else {
+            if(n == root) {
+                // need to set the root
+            }
+            // Locate the ref we want to insert into
             // n is an inner node, recurse, insert, handle splits
+            return insertInner(key, ref, n);
         }
-        return null;
     }
 
     /********************************************************************************
