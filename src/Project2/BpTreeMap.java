@@ -82,19 +82,37 @@ public class BpTreeMap <K extends Comparable <K>, V>
 
         // insert a key into the node
         public void insertKey(K k) {
-            for(int i = 0; i < nKeys + 1; i++) {
-                if(i > nKeys || k.compareTo(key[i]) >= 0) {
-                    // Shift keys
-                    for(int j = nKeys + 1; j > i; j--) {
-                        key[j] = key[j-1];
-                    }
-                    key[i] = k;
+            ArrayList<K> keyList = new ArrayList<K>(Arrays.asList(key));
+            int i = 0;
+            for(K _k : keyList) {
+                if(keyList.get(i) == null) {
+                    // Reached the end of sequence
+                    keyList.add(i, k);
+                    break;
+                } else if(keyList.get(i).compareTo(k) >= 0) {
+                    // Found a value greater than what we want to insert
+                    keyList.add(i, k);
+                    break;
+                }
+                i++;
+            }
+
+            // Get rid of trailing nulls
+            keyList.trimToSize();
+
+            // Copy contents
+            for(int j = 0; j < ORDER - 1; j++) {
+                if(j < keyList.size()) {
+                    this.key[j] = keyList.get(j);
+                } else {
+                    this.key[j] = null;
                 }
             }
             nKeys++;
         }
 
         // Returns: Whether or not it was inserted properly
+        // Assumption: Node is leaf
         public boolean insertKeyValue(K k, V v) {
             if(!this.isLeaf) {
                 return false;
@@ -106,6 +124,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
         }
 
         // Returns: Whether or not it was inserted properly
+        // Assumption: Node is internal
         public boolean insertKeyNode(K k, Node n) {
             if(this.isLeaf) {
                 return false;
@@ -118,28 +137,28 @@ public class BpTreeMap <K extends Comparable <K>, V>
 
         // Get the left pointer from a key
         public Object leftPointer(K k) {
-            int idx = Arrays.binarySearch(key, k);
+            int idx = Arrays.asList(key).indexOf(k);
             if(idx == -1) return null;
             return ref[idx];
         }
 
         // Get the right pointer from a key
         public Object rightPointer(K k) {
-            int idx = Arrays.binarySearch(key, k);
+            int idx = Arrays.asList(key).indexOf(k);
             if(idx == -1) return null;
             return ref[idx + 1];
         }
 
         // Set left pointer for key
         public void pointLeft(K k, Object o) {
-            int idx = Arrays.binarySearch(key, k);
+            int idx = Arrays.asList(key).indexOf(k);
             if(idx == -1) return;
             ref[idx] = o;
         }
 
         // Set right pointer for key
         public void pointRight(K k, Object o) {
-            int idx = Arrays.binarySearch(key, k);
+            int idx = Arrays.asList(key).indexOf(k);
             if(idx == -1) return;
             ref[idx + 1] = o;
         }
@@ -378,6 +397,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
 
 
     // Insert a value into the root of the tree (handles splitting)
+    // Assumption: Root is the only element (a leaf)
     private void insertRoot(K key, V ref) {
         if(root.nKeys >= ORDER - 1) {
             Node newRight = split(key, ref, root);
@@ -388,17 +408,29 @@ public class BpTreeMap <K extends Comparable <K>, V>
             newRoot.pointRight(rootKey, newRight);
             root = newRoot;
         } else {
-            // root.keys = wedgeOrdered(key, ref, root);
+            root.insertKeyValue(key, ref);
         }
     }
 
-    // Insert a k/v pair into an inner node 
+    // Insert a k/v pair into an inner node
+    // Assumption: n is an inner node 
     private void insertInner(K key, Node ref, Node n) {
 
     }
 
+    // Assumption: n is a leaf node
     private Map.Entry<K, Node> insertLeaf(K key, V ref, Node n) {
-        return null;
+        if(n.nKeys >= ORDER - 1) {
+            // Not enough room for another; must split
+            Node rightNode = split(key, ref, n);
+            // Set n's sibling to rightNode...?
+            // Return the RIGHT node to insert into parent.
+            return new AbstractMap.SimpleEntry(key, rightNode);
+        } else {
+            // Just insert it
+            n.insertKeyValue(key, ref);
+            return null;
+        }
     }
 
     /********************************************************************************
@@ -410,107 +442,14 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     private Map.Entry<K,Node> insert (K key, V ref, Node n, Node p)
     {
-        out.println ("Insert" + key);
-        
         if(n == root && root.isLeaf) {
+            // Insert into the root since it's the only element
             insertRoot(key, ref);
-        }
-
-        if(n.isLeaf) {
-            // If node is leaf, then ref is a value.
-            // proper key to insert into
-            if(n.nKeys >= ORDER - 1) {
-                // Must split!
-                out.println(key);
-                out.println(ref);
-                out.println(n);
-                Node splitNode = split(key, ref, n);
-                // Need to insert min value from split leaf into parent.
-                // Reference set to this node
-                return new AbstractMap.SimpleEntry<K,Node>(splitNode.key[0], n);
-            } else {
-                // there is space; wedge key/val pair in
-                wedgeOrdered(key, ref, n);
-                return null;
-            }
+        } else if(n.isLeaf) {
+            // n is a leaf, insert into it
         } else {
-            // inner node
-            Node nextRef = null;
-
-            // Get the reference to follow
-            for(int i = 0; i < n.nKeys; i++) {
-                if(key.compareTo(n.key[i]) < 0 ) {
-                    nextRef = (Node) n.ref[i];
-                    break;
-                }
-            }
-
-            if(nextRef == null) {
-                // Take farthest right reference
-                nextRef = (Node) n.ref[n.nKeys];
-            }
-
-            // Insert into root and check if it overflows
-            Map.Entry<K,Node> overflow = insert(key, ref, (Node) nextRef, n);
-            
-            // If we have something to insert, insert it (but we're not a leaf!)
-            if (overflow != null) {
-                // Need to propagate overflow!
-                if(n.nKeys >= ORDER - 1) {
-                    Node splitNode = split(overflow.getKey(), ref, n);
-                    K newKey = splitNode.key[0];
-                    // Remove first element of split node
-                    splitNode.removeFirst();
-                    // Return overflow to be processed above
-                    return new AbstractMap.SimpleEntry<K,Node>(newKey, n);
-                } else {
-                    // If there is space, just wedge the key/value pair in (no overflow)
-                    wedgeOrdered(key, ref, n);
-                    return null;
-                }
-            }
+            // n is an inner node, recurse, insert, handle splits
         }
-
-        // for(int i = 0; i < n.nKeys; i++) {
-        //     K curKey = n.key[i];
-        //     if(key.compareTo(curKey) <= 0) {
-        //         if(n.isLeaf) {
-        //             // If node is leaf, then ref is a value.
-        //             // proper key to insert into
-        //             if(n.nKeys >= ORDER - 1) {
-        //                 // Must split!
-        //                 Node splitNode = split(key, ref, n);
-        //                 // Need to insert min value from split leaf into parent.
-        //                 // Reference set to this node
-        //                 return new AbstractMap.SimpleEntry<K,Node>(splitNode.key[0], n);
-        //             } else {
-        //                 // there is space; wedge key/val pair in
-        //                 wedgeOrdered(key, ref, n);
-        //                 return null;
-        //             }
-        //         } else {
-        //             // Insert into root and check if it overflows
-        //             Map.Entry<K,Node> overflow = insert(key, ref, (Node) n.ref[i], n);
-                    
-        //             // If we have something to insert, insert it (but we're not a leaf!)
-        //             if (overflow != null) {
-        //                 // Need to propagate overflow!
-        //                 if(n.nKeys >= ORDER - 1) {
-        //                     Node splitNode = split(overflow.getKey(), ref, n);
-        //                     K newKey = splitNode.key[0];
-        //                     // Remove first element of split node
-        //                     splitNode.removeFirst();
-        //                     // Return overflow to be processed above
-        //                     return new AbstractMap.SimpleEntry<K,Node>(newKey, n);
-        //                 } else {
-        //                     // If there is space, just wedge the key/value pair in (no overflow)
-        //                     wedgeOrdered(key, ref, n);
-        //                     return null;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
         return null;
     }
 
@@ -629,7 +568,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
     public static void main (String [] args)
     {
         BpTreeMap <Integer, Integer> bpt = new BpTreeMap <> (Integer.class, Integer.class);
-        int totKeys = 5;
+        int totKeys = 4;
         // if (args.length == 1) totKeys = Integer.valueOf (args [0]);
         for (int i = 0; i <= totKeys; i += 1) bpt.put (i, i * i);
         bpt.print(bpt.root, 0);
