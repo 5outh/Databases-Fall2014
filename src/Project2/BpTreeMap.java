@@ -80,6 +80,42 @@ public class BpTreeMap <K extends Comparable <K>, V>
             this.nKeys--;
         }
 
+        // insert a key into the node
+        public void insertKey(K k) {
+            for(int i = 0; i < nKeys + 1; i++) {
+                if(i > nKeys || k.compareTo(key[i]) >= 0) {
+                    // Shift keys
+                    for(int j = nKeys + 1; j > i; j--) {
+                        key[j] = key[j-1];
+                    }
+                    key[i] = k;
+                }
+            }
+            nKeys++;
+        }
+
+        // Returns: Whether or not it was inserted properly
+        public boolean insertKeyValue(K k, V v) {
+            if(!this.isLeaf) {
+                return false;
+            } else {
+                this.insertKey(k);
+                this.pointLeft(k, v);
+                return true;
+            }
+        }
+
+        // Returns: Whether or not it was inserted properly
+        public boolean insertKeyNode(K k, Node n) {
+            if(this.isLeaf) {
+                return false;
+            } else {
+                this.insertKey(k);
+                this.pointLeft(k, n);
+                return true;
+            }
+        }
+
         // Get the left pointer from a key
         public Object leftPointer(K k) {
             int idx = Arrays.binarySearch(key, k);
@@ -351,6 +387,8 @@ public class BpTreeMap <K extends Comparable <K>, V>
             newRoot.pointLeft(rootKey, root);
             newRoot.pointRight(rootKey, newRight);
             root = newRoot;
+        } else {
+            // root.keys = wedgeOrdered(key, ref, root);
         }
     }
 
@@ -372,13 +410,10 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     private Map.Entry<K,Node> insert (K key, V ref, Node n, Node p)
     {
-        out.println ("Insert");
+        out.println ("Insert" + key);
         
-        if(n == root) {
-            if(n.nKeys < ORDER - 1) {
-                wedgeOrdered(key, ref, root);
-                return null;
-            }
+        if(n == root && root.isLeaf) {
+            insertRoot(key, ref);
         }
 
         if(n.isLeaf) {
