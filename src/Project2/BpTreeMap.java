@@ -20,7 +20,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
 {
     /** The maximum fanout for a B+Tree node.
      */
-    private static final int ORDER = 3;
+    private static final int ORDER = 4;
 
     /** The class for type K.
      */
@@ -53,6 +53,16 @@ public class BpTreeMap <K extends Comparable <K>, V>
             } // if
         } // constructor
 
+        // Yeah, whatever.
+        public int nKeys() {
+            for(int i = 0; i < key.length; i++) {
+                if(key[i] == null) {
+                    return i;
+                }
+            }
+            return key.length;
+        }
+
         // Remove first element of a node
         public K removeFirst() {
 
@@ -81,6 +91,12 @@ public class BpTreeMap <K extends Comparable <K>, V>
             }
 
             this.nKeys--;
+            
+            // @DEBUG
+            for(int i = 0; i < this.nKeys(); i++) {
+                out.println(this.key[i] + " : " + this.ref[i]);
+            }
+
             return k;
         }
 
@@ -275,14 +291,14 @@ public class BpTreeMap <K extends Comparable <K>, V>
             throw new NoSuchElementException();
         }
         Node ln = lastNode (root, 0);
-        K k = (K) ln.ref[ln.nKeys - 1];
+        K k = (K) ln.ref[ln.nKeys() - 1];
         return k;
     }
     
     public Node lastNode (Node current, int level) 
     {
        if ( ! current.isLeaf) {
-           return lastNode((Node) current.ref [current.nKeys - 1], level + 1);
+           return lastNode((Node) current.ref [current.nKeys() - 1], level + 1);
        } 
        else {
            return current;
@@ -291,14 +307,14 @@ public class BpTreeMap <K extends Comparable <K>, V>
     
     public void traverse (Node current, int level, SortedMap<K,V> sortedmap, K fromKey, K toKey) 
     {
-        for (int i = 0; i < current.nKeys; i++) {
+        for (int i = 0; i < current.nKeys(); i++) {
             if (( ((K)current.ref[i]).compareTo(fromKey) >= 0) &&
                 ( ((K)current.ref[i]).compareTo(toKey) <= 0))   
                 sortedmap.put(current.key[i], (V)current.ref[i]);
         }
         
         if ( ! current.isLeaf) {
-            for (int i = 0; i <= current.nKeys; i++){ 
+            for (int i = 0; i <= current.nKeys(); i++){ 
                 traverse ((Node) current.ref [i], level + 1, sortedmap, fromKey, toKey);
             }
         }
@@ -368,10 +384,10 @@ public class BpTreeMap <K extends Comparable <K>, V>
         
         for (int j = 0; j < level; j++) out.print ("\t");
         out.print ("[ . ");
-        for (int i = 0; i < n.nKeys; i++) out.print (n.key [i] + " . ");
+        for (int i = 0; i < n.nKeys(); i++) out.print (n.key [i] + " . ");
         out.println ("]");
         if (!n.isLeaf) {
-            for (int i = 0; i <= n.nKeys; i++){ 
+            for (int i = 0; i <= n.nKeys(); i++){ 
                 print ((Node) n.ref [i], level + 1);
             }
         } // if
@@ -390,7 +406,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
     private V find (K key, Node n)
     {
         count++;
-        for (int i = 0; i < n.nKeys; i++) {
+        for (int i = 0; i < n.nKeys(); i++) {
             K k_i = n.key [i];
             if (key.compareTo (k_i) <= 0) {
                 if (n.isLeaf) {
@@ -400,14 +416,14 @@ public class BpTreeMap <K extends Comparable <K>, V>
                 } // if
             } // if
         } // for
-        return (n.isLeaf) ? null : find (key, (Node) n.ref [n.nKeys]);
+        return (n.isLeaf) ? null : find (key, (Node) n.ref [n.nKeys()]);
     } // find
 
 
     // Insert a value into the root of the tree (handles splitting)
     // Assumption: Root is the only element (a leaf)
     private void insertRoot(K key, V ref) {
-        if(root.nKeys >= ORDER - 1) {
+        if(root.nKeys() >= ORDER - 1) {
             Node newRight = split(key, ref, root);
             Node newRoot = new Node(false);
             K rootKey = newRight.key[0]; 
@@ -430,15 +446,25 @@ public class BpTreeMap <K extends Comparable <K>, V>
 
         // If we have a leaf, defer to insertLeaf
         if(n.isLeaf) {
+            out.println("insert pointer " + n);
             return insertLeaf(k, ref, n);
         }
 
-        for(int i = 0; i < n.nKeys; i++) {
-            if( i == n.nKeys - 1 
-                || (k.compareTo(n.key[i]) >= 0 && k.compareTo(n.key[i+1]) <= 0) ) {
-                // k >= key[i] and k <= keys[i+1]
-                // Go right from this location
-                ptrToFollow = (Node) n.ref[i + 1];
+        // k is less than all keys
+        if(k.compareTo(n.key[0]) < 0) {
+            // follow leftmost path
+            out.println("leftmost");
+            // This is null pointer
+            ptrToFollow = (Node) n.ref[0];
+            out.println("pointer " + ptrToFollow);
+        } else { 
+            for(int i = 0; i < n.nKeys(); i++) {
+                if( i == n.nKeys() - 1 
+                    || (k.compareTo(n.key[i]) >= 0 && k.compareTo(n.key[i+1]) <= 0) ) {
+                    // k >= key[i] and k <= keys[i+1]
+                    // Go right from this location
+                    ptrToFollow = (Node) n.ref[i + 1];
+                }
             }
         }
 
@@ -446,12 +472,13 @@ public class BpTreeMap <K extends Comparable <K>, V>
 
         if(overflow != null) {
             // If the inner node is full, have to split again
-            if(n.nKeys >= ORDER - 1) {
-                    // @TODO: Fix case where this happens
-                    // WHYYYYYYYYYYYYYYYY WHAT THE FUCK
+            if(n.nKeys() >= ORDER - 1) {
                     Node rightNode = split(k, overflow.getValue(), n);
                     K newKey = rightNode.removeFirst();
+                    out.println("New key: " + newKey);
+                    // NOT removal that causes null pointers
                     // Return the first element from the right node of the split, but remove from inner node.
+                    out.println(rightNode);
                     return new AbstractMap.SimpleEntry(newKey, rightNode);
             // Otherwise, we just insert it.
             } else {
@@ -464,7 +491,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
 
     // Assumption: n is a leaf node
     private Map.Entry<K, Node> insertLeaf(K key, V ref, Node n) {
-        if(n.nKeys >= ORDER - 1) {
+        if(n.nKeys() >= ORDER - 1) {
             // Not enough room for another; must split
             Node rightNode = split(key, ref, n);
             // Set n's sibling to rightNode...?
@@ -513,7 +540,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     private void wedge (K key, V ref, Node n, int i)
     {
-        for (int j = n.nKeys; j > i; j--) {
+        for (int j = n.nKeys(); j > i; j--) {
             n.key [j] = n.key [j - 1];
             n.ref [j] = n.ref [j - 1];
         } // for
@@ -530,16 +557,22 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     private Node split (K key, Object ref, Node n)
     {
+        out.println("split node " + n);
+        for(K k : n.key) {
+            out.println("k: " + k);
+        }
+
         //finds the correct spot in the node
         int newIndexSpot = -1;
         if ( key.compareTo(n.key[0]) < 0){
             newIndexSpot = 0;
         }
-        else if (key.compareTo(n.key[n.nKeys - 1]) > 0){
-            newIndexSpot = n.nKeys;
+        else if (key.compareTo(n.key[n.nKeys() - 1]) > 0){
+            newIndexSpot = n.nKeys();
         }
         else {
-           for(int i = 0; i < n.nKeys; i++){
+            // @MODIFIED
+           for(int i = 0; i < n.nKeys() - 1; i++){
                if((key.compareTo(n.key[i]) > 0) & (key.compareTo(n.key[i + 1]) < 0)){
                    newIndexSpot = i + 1;
                }
@@ -625,16 +658,22 @@ public class BpTreeMap <K extends Comparable <K>, V>
     public static void main (String [] args)
     {
         BpTreeMap <Integer, Integer> bpt = new BpTreeMap <> (Integer.class, Integer.class);
-        int totKeys = 10;
+        // int totKeys = 10;
         
-        if (args.length == 1) totKeys = Integer.valueOf (args [0]);
+        // if (args.length == 1) totKeys = Integer.valueOf (args [0]);
         
-        for (int i = 0; i <= totKeys; i += 1) {
-            bpt.put (i, i * i);
-            bpt.print(bpt.root, 0);
-        }
+        // for (int i = 0; i <= totKeys; i += 1) {
+        //     bpt.put (i, i * i);
+        //     bpt.print(bpt.root, 0);
+        // }
 
-        // bpt.print (bpt.root, 0);
+        bpt.put(16, 4);
+        bpt.put(25, 5);
+        bpt.put(9, 3);
+        bpt.put(1, 1);
+        bpt.put(4, 2);
+
+        bpt.print (bpt.root, 0);
         // for (int i = 0; i < totKeys; i++) {
         //     out.println ("key = " + i + " value = " + bpt.get (i));
         // } // for
