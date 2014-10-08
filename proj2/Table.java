@@ -87,7 +87,7 @@ public class Table
         domain    = _domain;
         key       = _key;
         tuples    = new ArrayList <> ();
-        index     = new ExtHashMap <> (KeyType.class, Comparable [].class, DEFAULT_BUCKETS);       // also try BPTreeMap, LinHashMap or ExtHashMap
+        index     = new BpTreeMap <> (KeyType.class, Comparable [].class);       // also try BPTreeMap, LinHashMap or ExtHashMap
     } // constructor
 
     /************************************************************************************
@@ -108,7 +108,7 @@ public class Table
         domain    = _domain;
         key       = _key;
         tuples    = _tuples;
-        index     = new ExtHashMap <> (KeyType.class, Comparable [].class, DEFAULT_BUCKETS);       // also try BPTreeMap, LinHashMap or ExtHashMap
+        index     = new BpTreeMap <> (KeyType.class, Comparable [].class);       // also try BPTreeMap, LinHashMap or ExtHashMap
     } // constructor
 
     /************************************************************************************
