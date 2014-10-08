@@ -20,7 +20,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
 {
     /** The maximum fanout for a B+Tree node.
      */
-    private static final int ORDER = 5;
+    private static final int ORDER = 3;
 
     /** The class for type K.
      */
@@ -361,21 +361,24 @@ public class BpTreeMap <K extends Comparable <K>, V>
     @SuppressWarnings("unchecked")
     private void print (Node n, int level)
     {
-        out.println ("BpTreeMap");
-        out.println ("-------------------------------------------");
-
+        if(level == 0) {
+            out.println ("BpTreeMap");
+            out.println ("-------------------------------------------");
+        }
+        
         for (int j = 0; j < level; j++) out.print ("\t");
         out.print ("[ . ");
         for (int i = 0; i < n.nKeys; i++) out.print (n.key [i] + " . ");
         out.println ("]");
-        out.println(n.isLeaf);
         if (!n.isLeaf) {
             for (int i = 0; i <= n.nKeys; i++){ 
                 print ((Node) n.ref [i], level + 1);
             }
         } // if
 
-        out.println ("-------------------------------------------");
+        if(level == 0) {
+            out.println ("-------------------------------------------");
+        }
     } // print
 
     /********************************************************************************
@@ -424,14 +427,12 @@ public class BpTreeMap <K extends Comparable <K>, V>
     private Map.Entry<K,Node> insertInner(K k, V ref, Node n) {
         // Pointer we want to follow to find leaf
         Node ptrToFollow = null;
-        // @TODO: Fix this, it's null
-        
+
         // If we have a leaf, defer to insertLeaf
         if(n.isLeaf) {
+            out.println("a leaf was found, I like it");
             return insertLeaf(k, ref, n);
         }
-
-        out.println(n.nKeys);
 
         for(int i = 0; i < n.nKeys; i++) {
             if( i == n.nKeys - 1 
@@ -442,15 +443,22 @@ public class BpTreeMap <K extends Comparable <K>, V>
             }
         }
 
+        out.println(ptrToFollow.key[0]);
+
         Map.Entry<K,Node> overflow = insertInner(k, ref, ptrToFollow);
+
+        out.println("overflow" + overflow.getKey());
+        out.println("nkeys " + n.nKeys);
 
         if(overflow != null) {
             // If the inner node is full, have to split again
             if(n.nKeys >= ORDER - 1) {
-                Node rightNode = split(k, ref, n);
-                K newKey = rightNode.removeFirst();
-                // Return the first element from the right node of the split, but remove from inner node.
-                return new AbstractMap.SimpleEntry(newKey, rightNode);
+                    // @TODO: Fix case where this happens
+                    // WHYYYYYYYYYYYYYYYY WHAT THE FUCK
+                    Node rightNode = split(k, ref, n);
+                    K newKey = rightNode.removeFirst();
+                    // Return the first element from the right node of the split, but remove from inner node.
+                    return new AbstractMap.SimpleEntry(newKey, rightNode);
             // Otherwise, we just insert it.
             } else {
                 n.insertKeyNode(overflow.getKey(), overflow.getValue());
@@ -467,7 +475,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
             Node rightNode = split(key, ref, n);
             // Set n's sibling to rightNode...?
             // Return the RIGHT node to insert into parent.
-            return new AbstractMap.SimpleEntry(key, rightNode);
+            return new AbstractMap.SimpleEntry(rightNode.key[0], rightNode);
         } else {
             // Just insert it
             n.insertKeyValue(key, ref);
@@ -488,12 +496,16 @@ public class BpTreeMap <K extends Comparable <K>, V>
         if(n == root && root.isLeaf) {
             // Insert into the root since it's the only element
             insertRoot(key, ref);
+            out.println("GOTAROOT");
             return null;
         } else if(n.isLeaf) {
+            out.println("LEAF");
             // n is a leaf, insert into it. return whatever insertLeaf does.
             return insertLeaf(key, ref, n);
         } else {
+            out.println("GOTANINNER");
             if(n == root) {
+                out.println("JKROOT");
                 // @TODO
                 // need to set the root
             }
@@ -546,13 +558,17 @@ public class BpTreeMap <K extends Comparable <K>, V>
         }    
        
        K []  tempKey = (K []) Array.newInstance (classK, ORDER);
+
        Object [] tempRef = null;
        if (n.isLeaf) {
+            out.println("is leaf");
            tempRef = new Object [ORDER + 1];
        } else {
+            out.println("nonleaf");
            tempRef =  (Node []) Array.newInstance (Node.class, ORDER + 1);
        } // if
-           
+       
+       // TODO: Fails when nonleaf encountered
        for(int i = 0; i < ORDER; i++){
            if(i == newIndexSpot){
                tempKey[newIndexSpot] = key;
@@ -616,9 +632,13 @@ public class BpTreeMap <K extends Comparable <K>, V>
     {
         BpTreeMap <Integer, Integer> bpt = new BpTreeMap <> (Integer.class, Integer.class);
         int totKeys = 10;
-        // if (args.length == 1) totKeys = Integer.valueOf (args [0]);
-        for (int i = 0; i <= totKeys; i += 1) bpt.put (i, i * i);
-        bpt.print(bpt.root, 0);
+        
+        if (args.length == 1) totKeys = Integer.valueOf (args [0]);
+        
+        for (int i = 0; i <= totKeys; i += 1) {
+            bpt.put (i, i * i);
+            bpt.print(bpt.root, 0);
+        }
 
         // bpt.print (bpt.root, 0);
         // for (int i = 0; i < totKeys; i++) {
