@@ -92,11 +92,6 @@ public class BpTreeMap <K extends Comparable <K>, V>
 
             this.nKeys--;
             
-            // @DEBUG
-            for(int i = 0; i < this.nKeys(); i++) {
-                out.println(this.key[i] + " : " + this.ref[i]);
-            }
-
             return k;
         }
 
@@ -263,16 +258,20 @@ public class BpTreeMap <K extends Comparable <K>, V>
      * @return  the first key in the B+Tree map.
      * @author Deborah Brown
      */
-    public K firstKey() 
+    public K firstKey()
     {
         if (size() == 0){
             throw new NoSuchElementException();
         }
+
         if(size() == 1){
             return root.key[0];
         }
+
         Node current = root;
-        while(current.ref[0] != null){
+    
+        while(current.ref[1] != null){
+
             if (current.isLeaf){
                 return current.key[0];
             }
@@ -293,14 +292,25 @@ public class BpTreeMap <K extends Comparable <K>, V>
         if(size() == 0){
             throw new NoSuchElementException();
         }
-        Node ln = lastNode (root, 0);
-        K k = (K) ln.ref[ln.nKeys() - 1];
-        return k;
+
+        Node current = root;
+        for(int i = 0; i < current.ref.length; i++) {
+            
+            out.println(i + " : " + current.ref[i]);
+            if(current.isLeaf) {
+                return current.key[current.nKeys() - 1];
+            }
+            if(current.ref[i] == null) {
+                current = (Node) current.ref[i-1];
+                i = 0;
+            }
+        }
+        throw new NoSuchElementException();
     }
     
     public Node lastNode (Node current, int level) 
     {
-       if ( ! current.isLeaf) {
+       if (!current.isLeaf) {
            return lastNode((Node) current.ref [current.nKeys() - 1], level + 1);
        } 
        else {
@@ -393,8 +403,13 @@ public class BpTreeMap <K extends Comparable <K>, V>
             for (int i = 0; i <= n.nKeys(); i++){ 
                 print ((Node) n.ref [i], level + 1);
             }
-        } // if
-
+        } else {
+            for (int j = 0; j < level; j++) out.print ("\t");
+            out.print("--- ");
+            for (int i = 0; i < n.nKeys()+1; i++) out.print (n.ref [i] + " . ");
+            out.println(" ---");
+        }
+        
         if(level == 0) {
             out.println ("-------------------------------------------");
         }
@@ -411,20 +426,24 @@ public class BpTreeMap <K extends Comparable <K>, V>
         count++;
         for (int i = 0; i < n.nKeys(); i++) {
             K k_i = n.key [i];
-            if (key.compareTo (k_i) <= 0) {
-                if (n.isLeaf) {
-                    return (key.equals (k_i)) ? (V) n.ref [i] : null;
-                } else {
-                    return find (key, (Node) n.ref [i]);
-                } // if
-            } // if
-        } // for
+            if(key.equals(k_i) && n.isLeaf) {
+                return (key.equals (k_i)) ? (V) n.ref [i+1] : null;
+            } else if (key.compareTo(k_i) < 0) {
+                return find(key, (Node) n.ref[i]);
+            }
+        }
         return (n.isLeaf) ? null : find (key, (Node) n.ref [n.nKeys()]);
     } // find
 
 
     // Insert a value into the root of the tree (handles splitting)
     // Assumption: Root is the only element (a leaf)
+    /**
+     * Insert a key/ref pair into the root
+     * @param key
+     * @param ref
+     * @author Ben Kovach
+     */
     private void insertRoot(K key, V ref) {
         if(root.nKeys() >= ORDER - 1) {
             Node newRight = split(key, ref, root);
@@ -441,8 +460,14 @@ public class BpTreeMap <K extends Comparable <K>, V>
         }
     }
 
-    // Insert a k/v pair into an inner node
-    // Assumption: n is an inner node 
+    /**
+     * Insert a k/ref pair into an inner node
+     * @param  k
+     * @param  ref
+     * @param  n
+     * @return Map.Entry<K,Node>
+     * @author Ben Kovach
+     */
     private Map.Entry<K,Node> insertInner(K k, V ref, Node n) {
         // Pointer we want to follow to find leaf
         Node ptrToFollow = null;
@@ -460,8 +485,6 @@ public class BpTreeMap <K extends Comparable <K>, V>
             for(int i = 0; i < n.nKeys(); i++) {
                 if( i == n.nKeys() - 1
                     || (k.compareTo(n.key[i]) >= 0 && k.compareTo(n.key[i+1]) <= 0) ) {
-                    // out.println("R: " + n.key[i] + ", L: " + n.key[i+1]);
-                    // k >= key[i] and k <= keys[i+1]
                     // Go right from this location
                     ptrToFollow = (Node) n.ref[i + 1];
                     break;
@@ -474,28 +497,17 @@ public class BpTreeMap <K extends Comparable <K>, V>
         if(overflow != null) {
             // If the inner node is full, have to split again
             if(n.nKeys() >= ORDER - 1) {
+                    // Must split node
                     Node rightNode = split(overflow.getKey(), overflow.getValue(), n);
+
+                    // Remove first node from new node (and pass to parent)
                     K newKey = rightNode.removeFirst();
 
-                    // rightNode.insertKeyNode(overflow.getKey(), overflow.getValue());
-
-                    // @DEBUG
-                    for(int i = 0; i < n.nKeys(); i++) {
-                        out.println(n.key[i] + "// L: " + n.ref[i] + " R: " + n.ref[i+1]);
-                    }
-
-                    out.println("New key: " + newKey);
                     // Return the first element from the right node of the split, but remove from inner node.
-                    out.println("Right node: " + rightNode);
                     return new AbstractMap.SimpleEntry(newKey, rightNode);
             // Otherwise, we just insert it.
             } else {
-                out.println(overflow.getKey() + " has value " + overflow.getValue());
                 n.insertKeyNode(overflow.getKey(), overflow.getValue());
-
-                for(int i = 0; i < n.nKeys(); i++) {
-                    out.println(n.key[i] + " // L: " + n.ref[i] + " R: " + n.ref[i+1]);
-                }
             }
         }
         // Everything's good
@@ -503,6 +515,14 @@ public class BpTreeMap <K extends Comparable <K>, V>
     }
 
     // Assumption: n is a leaf node
+    /**
+     * Insert a key into a leaf node
+     * @param  key
+     * @param  ref
+     * @param  n
+     * @return Map.Entry<K,Node>
+     * @author Ben Kovach
+     */
     private Map.Entry<K, Node> insertLeaf(K key, V ref, Node n) {
         if(n.nKeys() >= ORDER - 1) {
             // Not enough room for another; must split
@@ -535,12 +555,18 @@ public class BpTreeMap <K extends Comparable <K>, V>
             // n is a leaf, insert into it. return whatever insertLeaf does.
             return insertLeaf(key, ref, n);
         } else {
-            if(n == root) {
-                // need to set the root
-            }
             // Locate the ref we want to insert into
             // n is an inner node, recurse, insert, handle splits
-            return insertInner(key, ref, n);
+            Map.Entry<K,Node> overflow = insertInner(key, ref, n);
+            // Update the root
+            if(overflow != null) {
+                Node newRoot = new Node(false);
+                newRoot.key[0] = overflow.getKey();
+                newRoot.ref[0] = n;
+                newRoot.ref[1] = overflow.getValue();
+                this.root = newRoot;
+            }
+            return overflow;
         }
     }
 
@@ -570,96 +596,75 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     private Node split (K key, Object ref, Node n)
     {
-        out.println("split node " + n);
-        for(K k : n.key) {
-            out.println("k: " + k);
-        }
-
         //finds the correct spot in the node
         int newIndexSpot = -1;
-        if ( key.compareTo(n.key[0]) < 0){
+        if (key.compareTo(n.key[0]) < 0){
             newIndexSpot = 0;
         }
         else if (key.compareTo(n.key[n.nKeys() - 1]) > 0){
             newIndexSpot = n.nKeys();
-        }
-        else {
-            // @MODIFIED
+        } else {
            for(int i = 0; i < n.nKeys() - 1; i++){
-               if((key.compareTo(n.key[i]) > 0) & (key.compareTo(n.key[i + 1]) < 0)){
+               if((key.compareTo(n.key[i]) > 0) && (key.compareTo(n.key[i + 1]) < 0)){
                    newIndexSpot = i + 1;
                }
            }
-        }    
+        }
        
-       K []  tempKey = (K []) Array.newInstance (classK, ORDER);
+        K []  tempKey = (K []) Array.newInstance (classK, ORDER);
 
-       Object [] tempRef = null;
-       if (n.isLeaf) {
-            out.println("is leaf");
-           tempRef = new Object [ORDER + 1];
-       } else {
-            out.println("nonleaf");
-           tempRef =  (Node []) Array.newInstance (Node.class, ORDER + 1);
-       } // if
+        Object [] tempRef = null;
+        if (n.isLeaf) {
+            tempRef = new Object [ORDER + 1];
+        } else {
+            tempRef =  (Node []) Array.newInstance (Node.class, ORDER + 1);
+        } // if
        
-       // TODO: Fails when nonleaf encountered
-       for(int i = 0; i < ORDER; i++){
-           if(i == newIndexSpot){
-               tempKey[newIndexSpot] = key;
-               if(n.isLeaf) {
-                tempRef[newIndexSpot] = (V) ref; 
-               } else {
-                tempRef[newIndexSpot] = (Node) ref; 
-               }
-               
-           }
-           else if(i > newIndexSpot){
-               tempKey[i] = n.key[i - 1];
-               tempRef[i] = n.ref[i - 1];
-           }
-           else{
-               tempKey[i] = n.key[i];
-               tempRef[i] = n.ref[i];
-               //tempRef[i] = java.util.Arrays.copyOfRange(n.ref, i, i);
-           }
-       }
+        // Set temporary key stuff
+        for(int i = 0; i < newIndexSpot; i++) {
+            tempKey[i] = n.key[i];
+            tempRef[i] = n.ref[i];
+        }
+        
+        tempKey[newIndexSpot] = key;
+        tempRef[newIndexSpot] = n.ref[newIndexSpot];
+        tempRef[newIndexSpot + 1] = ref;
 
-       Node nodeToReturn = new Node(n.isLeaf);
+        for(int i = newIndexSpot + 1; i < tempKey.length; i++) {
+            tempKey[i] = n.key[i-1];
+            tempRef[i + 1] = n.ref[i];
+        }
 
-       //this fills nodeToReturn with correct values and n with correct values
-       int numKeysOld = (int)Math.ceil((double)ORDER/2);
-       
-       n.key = (K []) Array.newInstance (classK, ORDER - 1);
-       if (n.isLeaf) {
-          n.ref = new Object [ORDER];
-       } else {
-           n.ref = (Node []) Array.newInstance (Node.class, ORDER);
-       } // if
-       
-       for(int k = 0; k < ORDER; k++){
-           if(k < (ORDER - numKeysOld)){
-               n.key[k] = tempKey[k];  
-               n.ref[k] = tempRef[k];  
-           }
-               
-           if(k >= (ORDER - numKeysOld)){
+        Node nodeToReturn = new Node(n.isLeaf);  
+ 
+        //this fills nodeToReturn with correct values and n with correct values
+        int numKeysOld = (int)Math.ceil((double)ORDER/2);
+        
+        n.key = (K []) Array.newInstance (classK, ORDER - 1);
+        if (n.isLeaf) {
+           n.ref = new Object [ORDER];
+        } else {
+            n.ref = (Node []) Array.newInstance (Node.class, ORDER);
+        } // if
+
+        for(int k = 0; k < ORDER; k++){
+            if(k < (ORDER - numKeysOld)){
+                n.key[k] = tempKey[k];
+                n.ref[k] = tempRef[k];
+                n.ref[k+1] = tempRef[k+1];
+            }
+                
+            if(k >= (ORDER - numKeysOld)){
               for(int l = 0; l < ORDER - 1; l++){
-                   if(nodeToReturn.key[l] == null){
-                       nodeToReturn.key[l] = tempKey[k];
-                       nodeToReturn.ref[l] = tempRef[k];
-                       break;
-                   }
-               }
-           }
-       }
-
-       // Set nkeys
-       for(int i = 0; i < nodeToReturn.key.length; i++) {
-          if(nodeToReturn.key[i] != null) {
-            nodeToReturn.nKeys++;
-          }
-       }
+                    if(nodeToReturn.key[l] == null){
+                        nodeToReturn.key[l] = tempKey[k]; 
+                        nodeToReturn.ref[l] = tempRef[k];
+                        nodeToReturn.ref[l+1] = tempRef[k+1];
+                        break; 
+                    } 
+                }
+            }
+        }
         return nodeToReturn;
 
     } // split
@@ -671,36 +676,41 @@ public class BpTreeMap <K extends Comparable <K>, V>
     public static void main (String [] args)
     {
         BpTreeMap <Integer, Integer> bpt = new BpTreeMap <> (Integer.class, Integer.class);
-        // int totKeys = 10;
+        int totKeys = 10;
         
-        // if (args.length == 1) totKeys = Integer.valueOf (args [0]);
+        if (args.length == 1) totKeys = Integer.valueOf (args [0]);
         
-        // for (int i = 0; i <= totKeys; i += 1) {
-        //     bpt.put (i, i * i);
-        //     bpt.print(bpt.root, 0);
-        // }
+        for (int i = 0; i <= totKeys; i += 1) {
+            bpt.put (i, i * i);
+        }
 
-        // initial
-        bpt.put(16, 4);
-        bpt.put(25, 5);
-        bpt.put(9, 3);
-        bpt.put(1, 1);
-        bpt.put(4, 2);
+        // // initial
+        // bpt.put(16, 4);
+        // bpt.put(25, 5);
+        // bpt.put(9, 3);
+        // bpt.put(1, 1);
+        // bpt.put(4, 2);
 
-        // here we go
-        bpt.put(20, 10);
-        bpt.put(13, 8);
-        bpt.put(15, 9);
-        bpt.put(10, 11);
-        bpt.put(11, 0);
-        bpt.put(12, 12);
+        // // here we go
+        // bpt.put(20, 10);
+        // bpt.put(13, 8);
+        // bpt.put(15, 9);
+        // bpt.put(10, 11);
+        // bpt.put(11, 0);
+        // bpt.put(12, 12);
 
         bpt.print (bpt.root, 0);
-        // for (int i = 0; i < totKeys; i++) {
-        //     out.println ("key = " + i + " value = " + bpt.get (i));
-        // } // for
-        // out.println ("-------------------------------------------");
-        // out.println ("Average number of nodes accessed = " + bpt.count / (double) totKeys);
+
+        for (int i = 0; i <= totKeys; i++) {
+            out.println ("key = " + i + " value = " + bpt.get (i));
+        } // for
+
+        out.println ("-------------------------------------------");
+        out.println ("Average number of nodes accessed = " + bpt.count / (double) totKeys);
+
+        out.println("First key: " + bpt.firstKey());
+        out.println("Last key: " + bpt.lastKey());
+
         // SortedMap sm = bpt.headMap(9);
         // SortedMap sm2 = bpt.tailMap(1);
         // SortedMap sm3 = bpt.subMap(1, 4);
