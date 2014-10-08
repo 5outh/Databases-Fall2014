@@ -308,27 +308,52 @@ public class BpTreeMap <K extends Comparable <K>, V>
         throw new NoSuchElementException();
     }
     
-    public Node lastNode (Node current, int level) 
-    {
-       if (!current.isLeaf) {
-           return lastNode((Node) current.ref [current.nKeys() - 1], level + 1);
-       } 
-       else {
-           return current;
-       }
-    }
+    /**
+     * collect stuff from the stuff
+     * @param current
+     * @param level
+     * @param SortedMap<K,V> sortedmap
+     */
     
     public void traverse (Node current, int level, SortedMap<K,V> sortedmap, K fromKey, K toKey) 
-    {
-        for (int i = 0; i < current.nKeys(); i++) {
-            if (( ((K)current.ref[i]).compareTo(fromKey) >= 0) &&
-                ( ((K)current.ref[i]).compareTo(toKey) <= 0))   
-                sortedmap.put(current.key[i], (V)current.ref[i]);
-        }
-        
+    {   
         if ( ! current.isLeaf) {
             for (int i = 0; i <= current.nKeys(); i++){ 
-                traverse ((Node) current.ref [i], level + 1, sortedmap, fromKey, toKey);
+                traverse ((Node) current.ref [i+1], level + 1, sortedmap, fromKey, toKey);
+            }
+        } else {
+            for (int i = 0; i < current.nKeys(); i++) {
+                if (( ( (K) current.ref[i+1]).compareTo(fromKey) >= 0) &&
+                    ( ( (K) current.ref[i+1]).compareTo(toKey) <= 0))   
+                     sortedmap.put(current.key[i], (V) current.ref[i+1]);
+            }
+        }
+    }
+
+    /**
+     * Traverse B+ tree in order (typically call with root as current)
+     * @param n
+     * @param min
+     * @param max
+     * @author Ben Kovach
+     */
+    public void inorder (Node n, SortedMap<K,V> sortedmap) {
+        
+        if(n == null) {
+            return;
+        }
+
+        for(int i = 0; i < n.nKeys(); i++) {
+            if(n.isLeaf) {
+                for(int j = 0; j < n.nKeys(); j++) {
+                    // push entries to end of array list
+                    sortedmap.put(n.key[j], (V) n.ref[j+1]);
+                }
+            } else if(n.ref[i] != null) {
+                // traverse in order    
+                inorder((Node) n.ref[i], sortedmap);
+            } else {
+                continue;
             }
         }
     }
@@ -343,7 +368,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
         //V fromV = find (firstkey, root);
         SortedMap<K, V> sortedmap = new TreeMap<K, V>();
         //V toV = find (toKey, root);
-        traverse (root, 0, sortedmap, firstkey, toKey); 
+        inorder (root, sortedmap); 
         return sortedmap;
     } // headMap
 
@@ -711,7 +736,8 @@ public class BpTreeMap <K extends Comparable <K>, V>
         out.println("First key: " + bpt.firstKey());
         out.println("Last key: " + bpt.lastKey());
 
-        // SortedMap sm = bpt.headMap(9);
+        SortedMap sm = bpt.headMap(9);
+        out.println(sm);
         // SortedMap sm2 = bpt.tailMap(1);
         // SortedMap sm3 = bpt.subMap(1, 4);
         // out.println (sm.toString());
