@@ -291,7 +291,6 @@ public class BpTreeMap <K extends Comparable <K>, V>
         Node current = root;
         for(int i = 0; i < current.ref.length; i++) {
             
-            out.println(i + " : " + current.ref[i]);
             if(current.isLeaf) {
                 return current.key[current.nKeys() - 1];
             }
@@ -301,28 +300,6 @@ public class BpTreeMap <K extends Comparable <K>, V>
             }
         }
         throw new NoSuchElementException();
-    }
-    
-    /**
-     * collect stuff from the stuff
-     * @param current
-     * @param level
-     * @param SortedMap<K,V> sortedmap
-     */
-    
-    public void traverse (Node current, int level, SortedMap<K,V> sortedmap, K fromKey, K toKey) 
-    {   
-        if ( ! current.isLeaf) {
-            for (int i = 0; i <= current.nKeys(); i++){ 
-                traverse ((Node) current.ref [i+1], level + 1, sortedmap, fromKey, toKey);
-            }
-        } else {
-            for (int i = 0; i < current.nKeys(); i++) {
-                if (( ( (K) current.ref[i+1]).compareTo(fromKey) >= 0) &&
-                    ( ( (K) current.ref[i+1]).compareTo(toKey) <= 0))   
-                     sortedmap.put(current.key[i], (V) current.ref[i+1]);
-            }
-        }
     }
 
     /**
