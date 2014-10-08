@@ -421,13 +421,16 @@ public class BpTreeMap <K extends Comparable <K>, V>
     private Map.Entry<K,Node> insertInner(K k, V ref, Node n) {
         // Pointer we want to follow to find leaf
         Node ptrToFollow = null;
+        // @TODO: Fix this, it's null
         
         // If we have a leaf, defer to insertLeaf
+
         if(n.isLeaf) {
             return insertLeaf(k, ref, n);
         }
 
         for(int i = 0; i < n.nKeys - 1; i++) {
+            out.println(n.ref[i]);
             if( i == n.nKeys - 1 
                 || (k.compareTo(n.key[i]) >= 0 && k.compareTo(n.key[i+1]) <= 0) ) {
                 // k >= key[i] and k <= keys[i+1]
@@ -436,7 +439,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
             }
         }
 
-        Map.Entry<K,Node> overflow = insertInner(k, ref, ptrToFollow); 
+        Map.Entry<K,Node> overflow = insertInner(k, ref, ptrToFollow);
         if(overflow != null) {
             // If the inner node is full, have to split again
             if(n.nKeys >= ORDER - 1) {
@@ -574,6 +577,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
        }
 
        Node nodeToReturn = new Node(n.isLeaf);
+
        //this fills nodeToReturn with correct values and n with correct values
        int numKeysOld = (int)Math.ceil((double)ORDER/2);
        
@@ -599,8 +603,15 @@ public class BpTreeMap <K extends Comparable <K>, V>
                    }
                }
            }
-       }    
+       }
+       // Set nkeys
+       for(int i = 0; i < nodeToReturn.key.length; i++) {
+          if(nodeToReturn.key[i] != null) {
+            nodeToReturn.nKeys++;
+          }
+       }
         return nodeToReturn;
+
     } // split
 
     /********************************************************************************
@@ -610,7 +621,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
     public static void main (String [] args)
     {
         BpTreeMap <Integer, Integer> bpt = new BpTreeMap <> (Integer.class, Integer.class);
-        int totKeys = 4;
+        int totKeys = 14;
         // if (args.length == 1) totKeys = Integer.valueOf (args [0]);
         for (int i = 0; i <= totKeys; i += 1) bpt.put (i, i * i);
         bpt.print(bpt.root, 0);
