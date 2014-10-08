@@ -460,8 +460,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
             for(int i = 0; i < n.nKeys(); i++) {
                 if( i == n.nKeys() - 1
                     || (k.compareTo(n.key[i]) >= 0 && k.compareTo(n.key[i+1]) <= 0) ) {
-
-                    out.println("R: " + n.key[i] + ", L: " + n.key[i+1]);
+                    // out.println("R: " + n.key[i] + ", L: " + n.key[i+1]);
                     // k >= key[i] and k <= keys[i+1]
                     // Go right from this location
                     ptrToFollow = (Node) n.ref[i + 1];
@@ -475,10 +474,17 @@ public class BpTreeMap <K extends Comparable <K>, V>
         if(overflow != null) {
             // If the inner node is full, have to split again
             if(n.nKeys() >= ORDER - 1) {
-                    Node rightNode = split(k, overflow.getValue(), n);
+                    Node rightNode = split(overflow.getKey(), overflow.getValue(), n);
                     K newKey = rightNode.removeFirst();
+
+                    // rightNode.insertKeyNode(overflow.getKey(), overflow.getValue());
+
+                    // @DEBUG
+                    for(int i = 0; i < n.nKeys(); i++) {
+                        out.println(n.key[i] + "// L: " + n.ref[i] + " R: " + n.ref[i+1]);
+                    }
+
                     out.println("New key: " + newKey);
-                    // NOT removal that causes null pointers
                     // Return the first element from the right node of the split, but remove from inner node.
                     out.println("Right node: " + rightNode);
                     return new AbstractMap.SimpleEntry(newKey, rightNode);
@@ -624,7 +630,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
        //this fills nodeToReturn with correct values and n with correct values
        int numKeysOld = (int)Math.ceil((double)ORDER/2);
        
-       n.key    = (K []) Array.newInstance (classK, ORDER - 1);
+       n.key = (K []) Array.newInstance (classK, ORDER - 1);
        if (n.isLeaf) {
           n.ref = new Object [ORDER];
        } else {
@@ -686,10 +692,8 @@ public class BpTreeMap <K extends Comparable <K>, V>
         bpt.put(13, 8);
         bpt.put(15, 9);
         bpt.put(10, 11);
-        // bpt.put(11, 0);
-        // bpt.put(12, 12);
-        
-
+        bpt.put(11, 0);
+        bpt.put(12, 12);
 
         bpt.print (bpt.root, 0);
         // for (int i = 0; i < totKeys; i++) {
