@@ -63,6 +63,10 @@ public class Table
      */
     private final Map <KeyType, Comparable []> index;
 
+    /** Number of buckets to init the ExtHashMap with
+    */
+    private final int DEFAULT_BUCKETS = 25;
+
     //----------------------------------------------------------------------------------
     // Constructors
     //----------------------------------------------------------------------------------
@@ -83,7 +87,7 @@ public class Table
         domain    = _domain;
         key       = _key;
         tuples    = new ArrayList <> ();
-        index     = new ExtHashMap <> (KeyType.class, Comparable [].class, 10);       // also try BPTreeMap, LinHashMap or ExtHashMap
+        index     = new ExtHashMap <> (KeyType.class, Comparable [].class, DEFAULT_BUCKETS);       // also try BPTreeMap, LinHashMap or ExtHashMap
     } // constructor
 
     /************************************************************************************
@@ -104,7 +108,7 @@ public class Table
         domain    = _domain;
         key       = _key;
         tuples    = _tuples;
-        index     = new TreeMap <> ();       // also try BPTreeMap, LinHashMap or ExtHashMap
+        index     = new ExtHashMap <> (KeyType.class, Comparable [].class, DEFAULT_BUCKETS);       // also try BPTreeMap, LinHashMap or ExtHashMap
     } // constructor
 
     /************************************************************************************
