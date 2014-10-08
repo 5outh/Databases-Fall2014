@@ -449,24 +449,23 @@ public class BpTreeMap <K extends Comparable <K>, V>
 
         // If we have a leaf, defer to insertLeaf
         if(n.isLeaf) {
-            out.println("insert pointer " + n);
             return insertLeaf(k, ref, n);
         }
 
         // k is less than all keys
         if(k.compareTo(n.key[0]) < 0) {
             // follow leftmost path
-            out.println("leftmost");
-            // This is null pointer
             ptrToFollow = (Node) n.ref[0];
-            out.println("pointer " + ptrToFollow);
-        } else { 
+        } else {
             for(int i = 0; i < n.nKeys(); i++) {
-                if( i == n.nKeys() - 1 
+                if( i == n.nKeys() - 1
                     || (k.compareTo(n.key[i]) >= 0 && k.compareTo(n.key[i+1]) <= 0) ) {
+
+                    out.println("R: " + n.key[i] + ", L: " + n.key[i+1]);
                     // k >= key[i] and k <= keys[i+1]
                     // Go right from this location
                     ptrToFollow = (Node) n.ref[i + 1];
+                    break;
                 }
             }
         }
@@ -685,6 +684,12 @@ public class BpTreeMap <K extends Comparable <K>, V>
         // here we go
         bpt.put(20, 10);
         bpt.put(13, 8);
+        bpt.put(15, 9);
+        bpt.put(10, 11);
+        // bpt.put(11, 0);
+        // bpt.put(12, 12);
+        
+
 
         bpt.print (bpt.root, 0);
         // for (int i = 0; i < totKeys; i++) {
