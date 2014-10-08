@@ -368,7 +368,8 @@ public class BpTreeMap <K extends Comparable <K>, V>
         out.print ("[ . ");
         for (int i = 0; i < n.nKeys; i++) out.print (n.key [i] + " . ");
         out.println ("]");
-        if ( ! n.isLeaf) {
+        out.println(n.isLeaf);
+        if (!n.isLeaf) {
             for (int i = 0; i <= n.nKeys; i++){ 
                 print ((Node) n.ref [i], level + 1);
             }
@@ -410,9 +411,11 @@ public class BpTreeMap <K extends Comparable <K>, V>
             newRoot.key[0] = rootKey;
             newRoot.pointLeft(rootKey, root);
             newRoot.pointRight(rootKey, newRight);
-            root = newRoot;
+            newRoot.nKeys = 1;
+            this.root = newRoot;
+            this.root.isLeaf = false;
         } else {
-            root.insertKeyValue(key, ref);
+            this.root.insertKeyValue(key, ref);
         }
     }
 
@@ -424,13 +427,13 @@ public class BpTreeMap <K extends Comparable <K>, V>
         // @TODO: Fix this, it's null
         
         // If we have a leaf, defer to insertLeaf
-
         if(n.isLeaf) {
             return insertLeaf(k, ref, n);
         }
 
-        for(int i = 0; i < n.nKeys - 1; i++) {
-            out.println(n.ref[i]);
+        out.println(n.nKeys);
+
+        for(int i = 0; i < n.nKeys; i++) {
             if( i == n.nKeys - 1 
                 || (k.compareTo(n.key[i]) >= 0 && k.compareTo(n.key[i+1]) <= 0) ) {
                 // k >= key[i] and k <= keys[i+1]
@@ -440,6 +443,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
         }
 
         Map.Entry<K,Node> overflow = insertInner(k, ref, ptrToFollow);
+
         if(overflow != null) {
             // If the inner node is full, have to split again
             if(n.nKeys >= ORDER - 1) {
@@ -490,6 +494,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
             return insertLeaf(key, ref, n);
         } else {
             if(n == root) {
+                // @TODO
                 // need to set the root
             }
             // Locate the ref we want to insert into
@@ -515,18 +520,6 @@ public class BpTreeMap <K extends Comparable <K>, V>
         n.ref [i] = ref;
         n.nKeys++;
     } // wedge
-
-    /**
-     * Wedge a value into a node in proper order
-     */
-    private void wedgeOrdered(K key, V ref, Node n) {
-        Node current = n;
-        int i = 0;
-        while(n.nKeys != 0 && i < n.nKeys && current.key[i] != null && current.key[i].compareTo(key) < 0) {
-            i++;
-        }
-        wedge(key, ref, n, i);
-    }
 
     /********************************************************************************
      * Split node n and return the newly created node.
@@ -604,6 +597,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
                }
            }
        }
+
        // Set nkeys
        for(int i = 0; i < nodeToReturn.key.length; i++) {
           if(nodeToReturn.key[i] != null) {
@@ -621,7 +615,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
     public static void main (String [] args)
     {
         BpTreeMap <Integer, Integer> bpt = new BpTreeMap <> (Integer.class, Integer.class);
-        int totKeys = 14;
+        int totKeys = 10;
         // if (args.length == 1) totKeys = Integer.valueOf (args [0]);
         for (int i = 0; i <= totKeys; i += 1) bpt.put (i, i * i);
         bpt.print(bpt.root, 0);
