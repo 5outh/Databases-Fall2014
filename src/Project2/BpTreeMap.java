@@ -180,6 +180,9 @@ public class BpTreeMap <K extends Comparable <K>, V>
         public void pointRight(K k, Object o) {
             int idx = Arrays.asList(key).indexOf(k);
             if(idx == -1) return;
+            for(int i = ref.length - 1; i > idx + 1; i--) {
+                ref[i] = ref[i-1];
+            }
             ref[idx + 1] = o;
         }
     } // Node inner class
@@ -478,11 +481,16 @@ public class BpTreeMap <K extends Comparable <K>, V>
                     out.println("New key: " + newKey);
                     // NOT removal that causes null pointers
                     // Return the first element from the right node of the split, but remove from inner node.
-                    out.println(rightNode);
+                    out.println("Right node: " + rightNode);
                     return new AbstractMap.SimpleEntry(newKey, rightNode);
             // Otherwise, we just insert it.
             } else {
+                out.println(overflow.getKey() + " has value " + overflow.getValue());
                 n.insertKeyNode(overflow.getKey(), overflow.getValue());
+
+                for(int i = 0; i < n.nKeys(); i++) {
+                    out.println(n.key[i] + " // L: " + n.ref[i] + " R: " + n.ref[i+1]);
+                }
             }
         }
         // Everything's good
@@ -667,11 +675,16 @@ public class BpTreeMap <K extends Comparable <K>, V>
         //     bpt.print(bpt.root, 0);
         // }
 
+        // initial
         bpt.put(16, 4);
         bpt.put(25, 5);
         bpt.put(9, 3);
         bpt.put(1, 1);
         bpt.put(4, 2);
+
+        // here we go
+        bpt.put(20, 10);
+        bpt.put(13, 8);
 
         bpt.print (bpt.root, 0);
         // for (int i = 0; i < totKeys; i++) {
