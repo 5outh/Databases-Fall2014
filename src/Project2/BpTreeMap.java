@@ -356,6 +356,9 @@ public class BpTreeMap <K extends Comparable <K>, V>
                 continue;
             }
         }
+
+        if(!n.isLeaf)
+            inorder((Node) n.ref[n.nKeys()], sortedmap);
     }
 
     /********************************************************************************
@@ -369,7 +372,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
         SortedMap<K, V> sortedmap = new TreeMap<K, V>();
         //V toV = find (toKey, root);
         inorder (root, sortedmap); 
-        return sortedmap;
+        return sortedmap.headMap(toKey);
     } // headMap
 
     /********************************************************************************
@@ -378,12 +381,9 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     public SortedMap <K,V> tailMap (K fromKey)
     {
-        K lastkey = lastKey();
         SortedMap<K, V> sortedmap = new TreeMap<K, V>();
-        traverse (root, 0, sortedmap, fromKey, lastkey); 
-        return sortedmap;
-
-        
+        inorder (root, sortedmap); 
+        return sortedmap.tailMap(fromKey);        
     } // tailMap
 
     /********************************************************************************
@@ -394,8 +394,8 @@ public class BpTreeMap <K extends Comparable <K>, V>
     public SortedMap <K,V> subMap (K fromKey, K toKey)
     {
         SortedMap<K, V> sortedmap = new TreeMap<K, V>();
-        traverse (root, 0, sortedmap, fromKey, toKey); 
-        return sortedmap;
+        inorder (root, sortedmap); 
+        return sortedmap.subMap(fromKey, toKey);
     } // subMap
 
     /********************************************************************************
@@ -737,14 +737,13 @@ public class BpTreeMap <K extends Comparable <K>, V>
         out.println("Last key: " + bpt.lastKey());
 
         SortedMap sm = bpt.headMap(9);
-        out.println(sm);
-        // SortedMap sm2 = bpt.tailMap(1);
-        // SortedMap sm3 = bpt.subMap(1, 4);
-        // out.println (sm.toString());
-        // out.println (sm2.toString());
-        // out.println (sm3.toString());
-        // Set <Entry<Integer, Integer>> es = bpt.entrySet();
-        // out.println(es.toString());
+        SortedMap sm2 = bpt.tailMap(5);
+        SortedMap sm3 = bpt.subMap(2, 4);
+        out.println (sm.toString());
+        out.println (sm2.toString());
+        out.println (sm3.toString());
+        Set <Entry<Integer, Integer>> es = bpt.entrySet();
+        out.println(es.toString());
     } // main
 
 } // BpTreeMap class
