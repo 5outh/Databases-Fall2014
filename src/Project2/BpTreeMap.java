@@ -219,13 +219,8 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     public Set <Map.Entry <K, V>> entrySet ()
     {
-        //Set <Map.Entry <K, V>> enSet = new HashSet <> ();
-        K firstkey = firstKey();
-        K lastkey = lastKey();
         SortedMap<K, V> sortedmap = new TreeMap<K, V>();
-        traverse (root, 0, sortedmap, firstkey, lastkey);
-        //enSet.addAll(sortedmap.entrySet());
-        //return enSet;
+        inorder(root, sortedmap);
         return sortedmap.entrySet();
     } // entrySet
 
