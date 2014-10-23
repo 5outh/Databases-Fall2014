@@ -33,7 +33,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
     /********************************************************************************
      * This inner class defines nodes that are stored in the B+tree map.
      */
-    private class Node
+    private class Node implements Serializable
     {
         boolean   isLeaf;
         int       nKeys;
@@ -426,9 +426,14 @@ public class BpTreeMap <K extends Comparable <K>, V>
             if(key.equals(k_i) && n.isLeaf) {
                 return (key.equals (k_i)) ? (V) n.ref [i+1] : null;
             } else if (key.compareTo(k_i) < 0) {
-                return find(key, (Node) n.ref[i]);
+                if(n.isLeaf) {
+                    return null;
+                } else { 
+                    return find(key, (Node) n.ref[i]);
+                }
             }
         }
+
         return (n.isLeaf) ? null : find (key, (Node) n.ref [n.nKeys()]);
     } // find
 

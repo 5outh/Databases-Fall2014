@@ -186,6 +186,7 @@ public class ExtHashMap <K, V>
     public V put (K key, V value)
     {
         int    i = h (key);
+        out.println("i: " + i + " and key: " + key);
         Bucket b = dir.get(i);
         //If there are as many keys as slots we need to split the bucket
         if(b.nKeys >= SLOTS) {	
@@ -291,7 +292,7 @@ public class ExtHashMap <K, V>
      */
     private int h (Object key)
     {
-        return key.hashCode () % mod;
+        return Math.abs( key.hashCode () % mod );
     } // h
 
     /********************************************************************************
