@@ -186,17 +186,9 @@ public class TestTupleGenerator
         String [] tables = { "Student", "Professor", "Course", "Teaching", "Transcript" };
         
         int tups [] = new int [] { 1000, 100, 500, 10000, 400 };
-        int counts[] = new int[5];
-
-        counts[0] = tups[0];
-        for(int i = 1; i < counts.length; i++) {
-            counts[i] = counts[i-1] + tups[i];
-            out.println(counts[i]);
-        }
-
-        // int tups [] = new int [] { 1, 2, 3, 4, 5 };
 
         Comparable [][][] resultTest = test.generate (tups);
+
         for (int i = 0; i < resultTest.length; i++) {
             String tableName = tables[i];
             Table_BpTreeMap table = BpTreeMap.get(tables[i]);
@@ -206,29 +198,21 @@ public class TestTupleGenerator
                 table.insert(tuple);
 
                 if(tableName.equals("Student")) {
-                    KeyType index = new KeyType(tuple[0]);
-                    table.select(index);
+                    table.select(t -> t[table.col("id")].equals(tuple[0]));
                 } else if (tableName.equals("Professor")) {
-
+                    table.select(t -> t[table.col("id")].equals(tuple[0]));
                 } else if (tableName.equals("Course")) {
-
+                    table.select(t -> t[table.col("crsCode")].equals(tuple[0]));
                 } else if (tableName.equals("Teaching")) {
-
+                    table.select(t -> t[table.col("crsCode")].equals(tuple[0]) && t[table.col("semester")].equals(tuple[1]));
                 } else if (tableName.equals("Transcript")) {
-
+                    table.select(t -> t[table.col("studId")].equals(tuple[0]) 
+                           && t[table.col("crsCode")].equals(tuple[1])
+                           && t[table.col("semester")].equals(tuple[2])
+                    );
                 }
             } // for
         } // for
-
-        //build BpTreeMap
-        // for (int i = 0; i < resultTest.length; i++) { //this loop controls how many tuples in the test
-        //     for (int j = 0; j < resultTest [i].length; j++) {
-        //     	// TreeMap.get(tables[i]).insert(resultTest[i][j]);
-        //     	// ExtHashMap.get(tables[i]).insert(resultTest[i][j]);
-        //     	BpTreeMap.get(tables[i]).insert(resultTest[i][j]);
-        //     } // for
-        // } // for
-        
 
     } // main
 
