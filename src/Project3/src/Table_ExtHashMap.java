@@ -137,7 +137,6 @@ public class Table_ExtHashMap
      */
     public Table_ExtHashMap project (String attributes)
     {
-        out.println ("RA> " + name + ".project (" + attributes + ")");
         String [] attrs     = attributes.split (" "); //col headers
         Class []  colDomain = extractDom (match (attrs), domain); //col headers' classes
         //if the current primary key(s) is in attrs, then use them, 
@@ -174,7 +173,6 @@ public class Table_ExtHashMap
     public Table_ExtHashMap select (Predicate <Comparable []> predicate)
     {
         // NB. Keep the headers the same, but select the ones satisfying the predicate(s)
-        out.println ("RA> " + name + ".select (" + predicate + ")");
         List <Comparable []> rows = tuples.stream().filter(predicate).collect(Collectors.toList());
 
         return new Table_ExtHashMap (name + count++, attribute, domain, key, rows);
@@ -190,8 +188,6 @@ public class Table_ExtHashMap
      */
     public Table_ExtHashMap select (KeyType keyVal)
     {
-        out.println ("RA> " + name + ".select (" + keyVal + ")");
-
         List<Comparable[]> rows = new ArrayList<>();
         Comparable[] row = index.get(keyVal);
         if(row != null) rows.add(row);
@@ -209,7 +205,6 @@ public class Table_ExtHashMap
      */
    public Table_ExtHashMap union (Table_ExtHashMap table2)
     {
-        out.println ("RA> " + name + ".union (" + table2.name + ")");
         if (! compatible (table2)) return null;
 
         List <Comparable []> rows = compareOperation(table2, "union");
@@ -228,12 +223,9 @@ public class Table_ExtHashMap
      */
     public Table_ExtHashMap minus (Table_ExtHashMap table2)
     {
-        out.println ("RA> " + name + ".minus (" + table2.name + ")");
         if (! compatible (table2)) return null;
 
         List <Comparable []> rows = compareOperation(table2, "minus");
-
-        //  T O   B E   I M P L E M E N T E D 
 
         return new Table_ExtHashMap (name + count++, attribute, domain, key, rows);
     } // minus
@@ -297,9 +289,6 @@ public class Table_ExtHashMap
      */
     public Table_ExtHashMap join (String attributes1, String attributes2, Table_ExtHashMap table2)
     {
-        out.println ("RA> " + name + ".join (" + attributes1 + ", " + attributes2 + ", "
-                                               + table2.name + ")");
-
         String [] t_attrs = attributes1.split (" ");
         String [] u_attrs = attributes2.split (" ");
 
@@ -432,8 +421,6 @@ public class Table_ExtHashMap
      */
     public boolean insert (Comparable [] tup)
     {
-        out.println ("DML> insert into " + name + " values ( " + Arrays.toString (tup) + " )");
-
         if (typeCheck (tup)) {
             tuples.add (tup);
             Comparable [] keyVal = new Comparable [key.length];

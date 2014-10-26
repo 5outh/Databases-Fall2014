@@ -114,7 +114,6 @@ public class Table_BpTreeMap
      */
     public Table_BpTreeMap (String name, String attributes, String domains, String _key)
     {
-
         this (name, attributes.split (" "), findClass (domains.split (" ")), _key.split(" "));
     } // constructor
 
@@ -133,7 +132,6 @@ public class Table_BpTreeMap
      */
     public Table_BpTreeMap project (String attributes)
     {
-        out.println ("RA> " + name + ".project (" + attributes + ")");
         String [] attrs     = attributes.split (" "); //col headers
         Class []  colDomain = extractDom (match (attrs), domain); //col headers' classes
         //if the current primary key(s) is in attrs, then use them, 
@@ -170,7 +168,6 @@ public class Table_BpTreeMap
     public Table_BpTreeMap select (Predicate <Comparable []> predicate)
     {
         // NB. Keep the headers the same, but select the ones satisfying the predicate(s)
-        out.println ("RA> " + name + ".select (" + predicate + ")");
         List <Comparable []> rows = tuples.stream().filter(predicate).collect(Collectors.toList());
 
         return new Table_BpTreeMap (name + count++, attribute, domain, key, rows);
@@ -186,8 +183,6 @@ public class Table_BpTreeMap
      */
     public Table_BpTreeMap select (KeyType keyVal)
     {
-        out.println ("RA> " + name + ".select (" + keyVal + ")");
-
         List<Comparable[]> rows = new ArrayList<>();
         Comparable[] row = index.get(keyVal);
         if(row != null) rows.add(row);
@@ -205,7 +200,6 @@ public class Table_BpTreeMap
      */
    public Table_BpTreeMap union (Table_BpTreeMap table2)
     {
-        out.println ("RA> " + name + ".union (" + table2.name + ")");
         if (! compatible (table2)) return null;
 
         List <Comparable []> rows = compareOperation(table2, "union");
@@ -224,7 +218,6 @@ public class Table_BpTreeMap
      */
     public Table_BpTreeMap minus (Table_BpTreeMap table2)
     {
-        out.println ("RA> " + name + ".minus (" + table2.name + ")");
         if (! compatible (table2)) return null;
 
         List <Comparable []> rows = compareOperation(table2, "minus");
@@ -291,9 +284,6 @@ public class Table_BpTreeMap
      */
     public Table_BpTreeMap join (String attributes1, String attributes2, Table_BpTreeMap table2)
     {
-        out.println ("RA> " + name + ".join (" + attributes1 + ", " + attributes2 + ", "
-                                               + table2.name + ")");
-
         String [] t_attrs = attributes1.split (" ");
         String [] u_attrs = attributes2.split (" ");
 
@@ -426,8 +416,6 @@ public class Table_BpTreeMap
      */
     public boolean insert (Comparable [] tup)
     {
-        out.println ("DML> insert into " + name + " values ( " + Arrays.toString (tup) + " )");
-
         if (typeCheck (tup)) {
             tuples.add (tup);
             Comparable [] keyVal = new Comparable [key.length];

@@ -189,10 +189,117 @@ public class TestTupleGenerator
     {
         init();
         testBpTreeMap(1000, 5000);
+        testTreeMap(1000, 5000);
+        // testExtHashMap(1000, 5000);
     } // main
+
+    public static void testExtHashMap(int studentSize, int transcriptSize) 
+    {
+        out.println("Tests for ExtHashMap with " + studentSize + " students and " + transcriptSize  +" transcript entries");
+        out.println("#########");
+
+        String [] tables = { "Student", "Professor", "Course", "Teaching", "Transcript" };
+        
+        // NOTE: We only care about Student and Transcript tables, really...
+        int tups [] = new int [] { studentSize, 1, 1, 1, transcriptSize };
+
+        // Generate tuples
+        Comparable [][][] resultTest = test.generate (tups);
+
+        // Insert into tables
+        for (int i = 0; i < resultTest.length; i++) {
+            String tableName = tables[i];
+            Table_ExtHashMap table = ExtHashMap.get(tables[i]);
+            for (int j = 0; j < resultTest [i].length; j++) {
+                Comparable[] tuple = resultTest[i][j];
+                table.insert(tuple);
+            } // for
+        } // for
+
+        // Select 1000 times
+        Table_ExtHashMap table = ExtHashMap.get(tables[0]);
+
+        long startTime = System.currentTimeMillis();
+
+        for (int j = 0; j < resultTest[0].length; j++) {
+            Comparable[] tuple = resultTest[0][j];
+            table.select(t -> t[table.col("id")].equals(tuple[0]));
+        } // for
+
+        long selectTime = System.currentTimeMillis() - startTime;
+
+        out.println("Selecting " + studentSize + " students took " + selectTime + " ms");
+
+        // Should be roughly 20% of the table
+        startTime = System.currentTimeMillis();
+        table.select(t -> t[table.col("id")].compareTo(800000) > 0);
+        long rangeQueryTime = System.currentTimeMillis() - startTime;
+
+        out.println("Selecting all students with ids > 800000 took " + rangeQueryTime + " ms");
+
+        startTime = System.currentTimeMillis();
+        table.join("id", "studId", ExtHashMap.get(tables[4]));
+        long joinTime = System.currentTimeMillis() - startTime;
+
+        out.println("Equijoin Students with Transcript took " + joinTime + " ms");
+    }
+
+    public static void testTreeMap(int studentSize, int transcriptSize) 
+    {
+        out.println("Tests for TreeMap with " + studentSize + " students and " + transcriptSize  +" transcript entries");
+        out.println("#########");
+
+        String [] tables = { "Student", "Professor", "Course", "Teaching", "Transcript" };
+        
+        // NOTE: We only care about Student and Transcript tables, really...
+        int tups [] = new int [] { studentSize, 1, 1, 1, transcriptSize };
+
+        // Generate tuples
+        Comparable [][][] resultTest = test.generate (tups);
+
+        // Insert into tables
+        for (int i = 0; i < resultTest.length; i++) {
+            String tableName = tables[i];
+            Table_TreeMap table = TreeMap.get(tables[i]);
+            for (int j = 0; j < resultTest [i].length; j++) {
+                Comparable[] tuple = resultTest[i][j];
+                table.insert(tuple);
+            } // for
+        } // for
+
+        // Select 1000 times
+        Table_TreeMap table = TreeMap.get(tables[0]);
+
+        long startTime = System.currentTimeMillis();
+
+        for (int j = 0; j < resultTest[0].length; j++) {
+            Comparable[] tuple = resultTest[0][j];
+            table.select(t -> t[table.col("id")].equals(tuple[0]));
+        } // for
+
+        long selectTime = System.currentTimeMillis() - startTime;
+
+        out.println("Selecting " + studentSize + " students took " + selectTime + " ms");
+
+        // Should be roughly 20% of the table
+        startTime = System.currentTimeMillis();
+        table.select(t -> t[table.col("id")].compareTo(800000) > 0);
+        long rangeQueryTime = System.currentTimeMillis() - startTime;
+
+        out.println("Selecting all students with ids > 800000 took " + rangeQueryTime + " ms");
+
+        startTime = System.currentTimeMillis();
+        table.join("id", "studId", TreeMap.get(tables[4]));
+        long joinTime = System.currentTimeMillis() - startTime;
+
+        out.println("Equijoin Students with Transcript took " + joinTime + " ms");
+    }
 
     public static void testBpTreeMap(int studentSize, int transcriptSize) 
     {
+        out.println("Tests for BpTreeMap with " + studentSize + " students and " + transcriptSize  +" transcript entries");
+        out.println("#########");
+
         String [] tables = { "Student", "Professor", "Course", "Teaching", "Transcript" };
         
         // NOTE: We only care about Student and Transcript tables, really...
@@ -223,7 +330,7 @@ public class TestTupleGenerator
 
         long selectTime = System.currentTimeMillis() - startTime;
 
-        out.println("Selecting all students took " + selectTime + " ms");
+        out.println("Selecting " + studentSize + " students took " + selectTime + " ms");
 
         // Should be roughly 20% of the table
         startTime = System.currentTimeMillis();
