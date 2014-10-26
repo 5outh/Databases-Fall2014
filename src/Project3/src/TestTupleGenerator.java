@@ -185,10 +185,13 @@ public class TestTupleGenerator
 
         String [] tables = { "Student", "Professor", "Course", "Teaching", "Transcript" };
         
-        int tups [] = new int [] { 1000, 100, 500, 10000, 400 };
+        // NOTE: We only care about Student and Transcript tables, really...
+        int tups [] = new int [] { 1000, 0, 0, 0, 400 };
 
+        // Generate tuples
         Comparable [][][] resultTest = test.generate (tups);
 
+        // Insert into tables
         for (int i = 0; i < resultTest.length; i++) {
             String tableName = tables[i];
             Table_BpTreeMap table = BpTreeMap.get(tables[i]);
@@ -214,15 +217,15 @@ public class TestTupleGenerator
         out.println("range select");
         
         startTime = System.currentTimeMillis();
-        table.select(t -> t[table.col("id")].compareTo(800000) > 0).print();
+        table.select(t -> t[table.col("id")].compareTo(800000) > 0);
         long rangeQueryTime = System.currentTimeMillis() - startTime;
 
         out.println("join with transcript");
 
         startTime = System.currentTimeMillis();
-        table.join("id", "studId", BpTreeMap.get(tables[4])).print();
+        table.join("id", "studId", BpTreeMap.get(tables[4]));
         long joinTime = System.currentTimeMillis() - startTime;
-        
+
     } // main
 
 } // TestTupleGenerator
