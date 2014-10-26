@@ -48,7 +48,7 @@ public class TestTupleGenerator
 	public static Table_TreeMap Teaching_TM = new Table_TreeMap ("Teaching",
             "crsCode semester profId",
             "String String Integer",
-            "crcCode semester"
+            "crsCode semester"
 	);
 	
 	public static Table_TreeMap Transcript_TM = new Table_TreeMap("Transcript",
@@ -84,7 +84,7 @@ public class TestTupleGenerator
 	public static Table_ExtHashMap Teaching_EHM = new Table_ExtHashMap ("Teaching",
             "crsCode semester profId",
             "String String Integer",
-            "crcCode semester"
+            "crsCode semester"
 	);
 	
 	public static Table_ExtHashMap Transcript_EHM = new Table_ExtHashMap("Transcript",
@@ -117,7 +117,7 @@ public class TestTupleGenerator
 	public static Table_BpTreeMap Teaching_BTM = new Table_BpTreeMap ("Teaching",
             "crsCode semester profId",
             "String String Integer",
-            "crcCode semester"
+            "crsCode semester"
 	);
 	
 	public static Table_BpTreeMap Transcript_BTM = new Table_BpTreeMap("Transcript",
@@ -167,7 +167,7 @@ public class TestTupleGenerator
         test.addRelSchema ("Teaching",
                            "crsCode semester profId",
                            "String String Integer",
-                           "crcCode semester",
+                           "crsCode semester",
                            new String [][] {{ "profId", "Professor", "id" },
                                             { "crsCode", "Course", "crsCode" }});
         

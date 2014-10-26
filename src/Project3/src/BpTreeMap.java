@@ -598,11 +598,13 @@ public class BpTreeMap <K extends Comparable <K>, V>
         if (key.compareTo(n.key[0]) < 0){
             newIndexSpot = 0;
         }
+
         else if (key.compareTo(n.key[n.nKeys() - 1]) > 0){
             newIndexSpot = n.nKeys();
         } else {
            for(int i = 0; i < n.nKeys() - 1; i++){
-               if((key.compareTo(n.key[i]) > 0) && (key.compareTo(n.key[i + 1]) < 0)){
+               out.println(n.key[i]);
+               if((key.compareTo(n.key[i]) >= 0) && (key.compareTo(n.key[i + 1]) <= 0)){
                    newIndexSpot = i + 1;
                }
            }
@@ -614,7 +616,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
         if (n.isLeaf) {
             tempRef = new Object [ORDER + 1];
         } else {
-            tempRef =  (Node []) Array.newInstance (Node.class, ORDER + 1);
+            tempRef = (Node []) Array.newInstance (Node.class, ORDER + 1);
         } // if
        
         // Set temporary key stuff
