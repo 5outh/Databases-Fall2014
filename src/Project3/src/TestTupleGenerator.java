@@ -193,26 +193,25 @@ public class TestTupleGenerator
             String tableName = tables[i];
             Table_BpTreeMap table = BpTreeMap.get(tables[i]);
             for (int j = 0; j < resultTest [i].length; j++) {
-                
                 Comparable[] tuple = resultTest[i][j];
                 table.insert(tuple);
-
-                if(tableName.equals("Student")) {
-                    table.select(t -> t[table.col("id")].equals(tuple[0]));
-                } else if (tableName.equals("Professor")) {
-                    table.select(t -> t[table.col("id")].equals(tuple[0]));
-                } else if (tableName.equals("Course")) {
-                    table.select(t -> t[table.col("crsCode")].equals(tuple[0]));
-                } else if (tableName.equals("Teaching")) {
-                    table.select(t -> t[table.col("crsCode")].equals(tuple[0]) && t[table.col("semester")].equals(tuple[1]));
-                } else if (tableName.equals("Transcript")) {
-                    table.select(t -> t[table.col("studId")].equals(tuple[0]) 
-                           && t[table.col("crsCode")].equals(tuple[1])
-                           && t[table.col("semester")].equals(tuple[2])
-                    );
-                }
             } // for
         } // for
+
+        // Select 1000 times
+        Table_BpTreeMap table = BpTreeMap.get(tables[0]);
+
+        for (int j = 0; j < resultTest[0].length; j++) {
+            Comparable[] tuple = resultTest[0][j];
+            table.select(t -> t[table.col("id")].equals(tuple[0]));
+        } // for
+
+        // Should be roughly 20% of the table
+        out.println("range select");
+        table.select(t -> t[table.col("id")].compareTo(800000) > 0).print();
+
+        out.println("join with transcript");
+        table.join("id", "studId", BpTreeMap.get(tables[4])).print();
 
     } // main
 
