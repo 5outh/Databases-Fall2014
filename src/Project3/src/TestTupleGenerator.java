@@ -201,18 +201,28 @@ public class TestTupleGenerator
         // Select 1000 times
         Table_BpTreeMap table = BpTreeMap.get(tables[0]);
 
+        long startTime = System.currentTimeMillis();
+
         for (int j = 0; j < resultTest[0].length; j++) {
             Comparable[] tuple = resultTest[0][j];
             table.select(t -> t[table.col("id")].equals(tuple[0]));
         } // for
 
+        long selectTime = System.currentTimeMillis() - startTime;
+
         // Should be roughly 20% of the table
         out.println("range select");
+        
+        startTime = System.currentTimeMillis();
         table.select(t -> t[table.col("id")].compareTo(800000) > 0).print();
+        long rangeQueryTime = System.currentTimeMillis() - startTime;
 
         out.println("join with transcript");
-        table.join("id", "studId", BpTreeMap.get(tables[4])).print();
 
+        startTime = System.currentTimeMillis();
+        table.join("id", "studId", BpTreeMap.get(tables[4])).print();
+        long joinTime = System.currentTimeMillis() - startTime;
+        
     } // main
 
 } // TestTupleGenerator
