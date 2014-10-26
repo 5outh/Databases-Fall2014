@@ -82,7 +82,7 @@ public class Table_BpTreeMap
         domain    = _domain;
         key       = _key;
         tuples    = new ArrayList <> ();
-        index     = new BpTreeMap <KeyType, Comparable []> (KeyType.class, Comparable [].class);       // also try BPTreeMap, LinHashMap or ExtHashMap
+        index     = new BpTreeMap <KeyType, Comparable []> (KeyType.class, Comparable [].class);
     } // constructor
 
     /************************************************************************************
@@ -181,7 +181,7 @@ public class Table_BpTreeMap
      * (Map) to retrieve the tuple with the given key value.
      *
      * @author Benjamin Kovach
-     * @param keyVal  the given key value
+     * @param keyVal the given key value
      * @return  a table with the tuple satisfying the key predicate
      */
     public Table_BpTreeMap select (KeyType keyVal)
@@ -228,8 +228,6 @@ public class Table_BpTreeMap
         if (! compatible (table2)) return null;
 
         List <Comparable []> rows = compareOperation(table2, "minus");
-
-        //  T O   B E   I M P L E M E N T E D 
 
         return new Table_BpTreeMap (name + count++, attribute, domain, key, rows);
     } // minus

@@ -426,7 +426,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
             if(key.equals(k_i) && n.isLeaf) {
                 return (key.equals (k_i)) ? (V) n.ref [i+1] : null;
             } else if (key.compareTo(k_i) < 0) {
-                return find(key, (Node) n.ref[i]);
+                return find(key, (Node) n.ref[i]);                
             }
         }
         return (n.isLeaf) ? null : find (key, (Node) n.ref [n.nKeys()]);
@@ -603,7 +603,6 @@ public class BpTreeMap <K extends Comparable <K>, V>
             newIndexSpot = n.nKeys();
         } else {
            for(int i = 0; i < n.nKeys() - 1; i++){
-               out.println(n.key[i]);
                if((key.compareTo(n.key[i]) >= 0) && (key.compareTo(n.key[i + 1]) <= 0)){
                    newIndexSpot = i + 1;
                }
