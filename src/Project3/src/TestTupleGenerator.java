@@ -30,6 +30,44 @@ public class TestTupleGenerator
 
     public static TupleGenerator test; 
 	
+    //define the tables implementing arraylist
+    public static Table_ArrayList Student_AL = new Table_ArrayList ("Student", 
+            "id name address status",
+            "Integer String String String",
+            "id");
+    
+    
+    public static Table_ArrayList Professor_AL = new Table_ArrayList ("Professor",
+            "id name deptId",
+            "Integer String String",
+            "id");
+
+    public static Table_ArrayList Course_AL = new Table_ArrayList ("Course",
+            "crsCode deptId crsName descr",
+            "String String String String",
+            "crsCode");
+    
+    public static Table_ArrayList Teaching_AL = new Table_ArrayList ("Teaching",
+            "crsCode semester profId",
+            "String String Integer",
+            "crsCode semester"
+    );
+    
+    public static Table_ArrayList Transcript_AL = new Table_ArrayList("Transcript",
+            "studId crsCode semester grade",
+            "Integer String String String",
+            "studId crsCode semester"
+    );
+    
+    public static Map <String, Table_ArrayList> ArrayList = new HashMap<String, Table_ArrayList>(); 
+    static{
+        ArrayList.put(TABLE_NAMES[0], Student_AL);
+        ArrayList.put(TABLE_NAMES[1], Professor_AL);
+        ArrayList.put(TABLE_NAMES[2], Course_AL);
+        ArrayList.put(TABLE_NAMES[3], Teaching_AL);
+        ArrayList.put(TABLE_NAMES[4], Transcript_AL);
+    }
+
 	//define the tables implementing treemap
 	public static Table_TreeMap Student_TM = new Table_TreeMap ("Student", 
 			"id name address status",
@@ -66,7 +104,6 @@ public class TestTupleGenerator
 		TreeMap.put(TABLE_NAMES[2], Course_TM);
 		TreeMap.put(TABLE_NAMES[3], Teaching_TM);
 		TreeMap.put(TABLE_NAMES[4], Transcript_TM);
-
 	}
 
 	//define the tables implementing ExtHashMap
@@ -191,7 +228,95 @@ public class TestTupleGenerator
         testBpTreeMap(1000, 5000);
         testTreeMap(1000, 5000);
         // testExtHashMap(1000, 5000);
+        testArrayList(1000, 5000);
     } // main
+
+
+    public static void testArrayList(int studentSize, int transcriptSize) 
+    {
+        out.println("Tests for ArrayList with " + studentSize + " students and " + transcriptSize  +" transcript entries");
+        out.println("#########");
+
+        String [] tables = { "Student", "Professor", "Course", "Teaching", "Transcript" };
+        
+        // NOTE: We only care about Student and Transcript tables, really...
+        int tups [] = new int [] { studentSize, 1, 1, 1, transcriptSize };
+
+        // Generate tuples
+        Comparable [][][] resultTest = test.generate (tups);
+
+        // Insert into tables
+        for (int i = 0; i < resultTest.length; i++) {
+            String tableName = tables[i];
+            Table_ArrayList table = ArrayList.get(tables[i]);
+            for (int j = 0; j < resultTest [i].length; j++) {
+                Comparable[] tuple = resultTest[i][j];
+                table.insert(tuple);
+            } // for
+        } // for
+
+        // Select 1000 times
+        Table_ArrayList table = ArrayList.get(tables[0]);
+
+        long startTime = System.currentTimeMillis();
+
+        // "Select"
+        for (int j = 0; j < resultTest[0].length; j++) {
+            Comparable[] tuple = resultTest[0][j];
+            for(Comparable[] t : table.getTuples()) {
+                if(t[table.col("id")].equals(tuple[0])) {
+                    // Just need to _simulate_ finding matching tuples, no need to do anything with them.
+                    continue;
+                }
+            }
+        } // for
+
+        long selectTime = System.currentTimeMillis() - startTime;
+
+        out.println("Selecting " + studentSize + " students took " + selectTime + " ms");
+
+        // Should be roughly 20% of the table
+        startTime = System.currentTimeMillis();
+
+        for (int j = 0; j < resultTest[0].length; j++) {
+            Comparable[] tuple = resultTest[0][j];
+            for(Comparable[] t : table.getTuples()) {
+                // Just need to _simulate_ finding matching tuples, no need to do anything with them.
+                if(t[table.col("id")].compareTo(80000) > 0) {
+                    break;
+                }
+            }
+        } // for
+
+        long rangeQueryTime = System.currentTimeMillis() - startTime;
+
+        out.println("Selecting all students with ids > 800000 took " + rangeQueryTime + " ms");
+
+        startTime = System.currentTimeMillis();
+
+        // TODO: Nested Loop Join
+        // 
+        // For each tuple r in R do
+        //  For each tuple s in S do
+        //     If r and s satisfy the join condition
+        //        Then output the tuple <r,s>
+
+        Table_ArrayList students = ArrayList.get(tables[0]);
+        Table_ArrayList transcripts = ArrayList.get(tables[4]);
+
+        for (Comparable[] r : students.getTuples()) {
+            for (Comparable[] s : transcripts.getTuples()) {
+                if (r[students.col("id")] == s[transcripts.col("studId")]) {
+                    // output, or whatever. Again, we only really need to simulate, so don't care.
+                }
+            }
+        }
+
+        long joinTime = System.currentTimeMillis() - startTime;
+
+        out.println("Equijoin Students with Transcript took " + joinTime + " ms");
+        out.println();
+    }
 
     public static void testExtHashMap(int studentSize, int transcriptSize) 
     {
@@ -242,6 +367,7 @@ public class TestTupleGenerator
         long joinTime = System.currentTimeMillis() - startTime;
 
         out.println("Equijoin Students with Transcript took " + joinTime + " ms");
+        out.println();
     }
 
     public static void testTreeMap(int studentSize, int transcriptSize) 
@@ -274,7 +400,7 @@ public class TestTupleGenerator
 
         for (int j = 0; j < resultTest[0].length; j++) {
             Comparable[] tuple = resultTest[0][j];
-            table.select(t -> t[table.col("id")].equals(tuple[0]));
+            table.select(new KeyType(tuple[0]));
         } // for
 
         long selectTime = System.currentTimeMillis() - startTime;
@@ -293,6 +419,7 @@ public class TestTupleGenerator
         long joinTime = System.currentTimeMillis() - startTime;
 
         out.println("Equijoin Students with Transcript took " + joinTime + " ms");
+        out.println();
     }
 
     public static void testBpTreeMap(int studentSize, int transcriptSize) 
@@ -344,6 +471,7 @@ public class TestTupleGenerator
         long joinTime = System.currentTimeMillis() - startTime;
 
         out.println("Equijoin Students with Transcript took " + joinTime + " ms");
+        out.println();
     }
 
 } // TestTupleGenerator

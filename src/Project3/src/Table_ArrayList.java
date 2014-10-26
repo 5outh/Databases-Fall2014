@@ -114,7 +114,6 @@ public class Table_ArrayList
      */
     public Table_ArrayList (String name, String attributes, String domains, String _key)
     {
-
         this (name, attributes.split (" "), findClass (domains.split (" ")), _key.split(" "));
         out.println ("DDL> create table " + name + " (" + attributes + ")");
     } // constructor
@@ -122,6 +121,15 @@ public class Table_ArrayList
     //----------------------------------------------------------------------------------
     // Public Methods
     //----------------------------------------------------------------------------------
+
+    /**
+     * For speed testing
+     * @author Ben Kovach
+     * @return the tuples in the table
+     */
+    public List<Comparable[]> getTuples() {
+        return this.tuples;
+    }
 
     /************************************************************************************
      * Project the tuples onto a lower dimension by keeping only the given attributes.
