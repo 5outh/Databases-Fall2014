@@ -147,9 +147,13 @@ public class TestTupleGenerator
 
     public static void main (String [] args)
     {
-    	TupleGenerator test = new TupleGeneratorImpl ();
+        testBpTreeMap(1000, 5000);
+    } // main
 
-        
+    public static void testBpTreeMap(int studentSize, int transcriptSize) 
+    {
+        TupleGenerator test = new TupleGeneratorImpl ();
+
         test.addRelSchema ("Student",
                            "id name address status",
                            "Integer String String String",
@@ -186,7 +190,7 @@ public class TestTupleGenerator
         String [] tables = { "Student", "Professor", "Course", "Teaching", "Transcript" };
         
         // NOTE: We only care about Student and Transcript tables, really...
-        int tups [] = new int [] { 1000, 0, 0, 0, 400 };
+        int tups [] = new int [] { studentSize, 1, 1, 1, transcriptSize };
 
         // Generate tuples
         Comparable [][][] resultTest = test.generate (tups);
@@ -213,20 +217,21 @@ public class TestTupleGenerator
 
         long selectTime = System.currentTimeMillis() - startTime;
 
+        out.println("Selecting all students took " + selectTime + " ms");
+
         // Should be roughly 20% of the table
-        out.println("range select");
-        
         startTime = System.currentTimeMillis();
         table.select(t -> t[table.col("id")].compareTo(800000) > 0);
         long rangeQueryTime = System.currentTimeMillis() - startTime;
 
-        out.println("join with transcript");
+        out.println("Selecting all students with ids > 800000 took " + rangeQueryTime + " ms");
 
         startTime = System.currentTimeMillis();
         table.join("id", "studId", BpTreeMap.get(tables[4]));
         long joinTime = System.currentTimeMillis() - startTime;
 
-    } // main
+        out.println("Equijoin Students with Transcript took " + joinTime + " ms");
+    }
 
 } // TestTupleGenerator
 
