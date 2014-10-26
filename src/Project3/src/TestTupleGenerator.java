@@ -27,6 +27,8 @@ public class TestTupleGenerator
 	
 	//the valid table names to index the tables with
 	public static final String [] TABLE_NAMES = {"Student", "Professor", "Course", "Teaching", "Transcript" };
+
+    public static TupleGenerator test; 
 	
 	//define the tables implementing treemap
 	public static Table_TreeMap Student_TM = new Table_TreeMap ("Student", 
@@ -145,14 +147,9 @@ public class TestTupleGenerator
 		(HashMap) ExtHashMap,
 	};
 
-    public static void main (String [] args)
+    public static void init()
     {
-        testBpTreeMap(1000, 5000);
-    } // main
-
-    public static void testBpTreeMap(int studentSize, int transcriptSize) 
-    {
-        TupleGenerator test = new TupleGeneratorImpl ();
+        test = new TupleGeneratorImpl ();
 
         test.addRelSchema ("Student",
                            "id name address status",
@@ -186,7 +183,16 @@ public class TestTupleGenerator
                            new String [][] {{ "studId", "Student", "id"},
                                             { "crsCode", "Course", "crsCode" },
                                             { "crsCode semester", "Teaching", "crsCode semester" }});
+    }
 
+    public static void main (String [] args)
+    {
+        init();
+        testBpTreeMap(1000, 5000);
+    } // main
+
+    public static void testBpTreeMap(int studentSize, int transcriptSize) 
+    {
         String [] tables = { "Student", "Professor", "Course", "Teaching", "Transcript" };
         
         // NOTE: We only care about Student and Transcript tables, really...
