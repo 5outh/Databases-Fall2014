@@ -21,11 +21,9 @@ class ReverseGeocoder:
 
     def getState(self):
         res = self.lookupPoint()
+        if(res['status'] == 'ZERO_RESULTS'):
+            return None
         for component in res['results'][0]['address_components']:
             types = component['types']
             if ("administrative_area_level_1" in types):
                 return component['short_name']
-
-lat, lng = 33.947007, -83.378011
-
-print (json.dumps(ReverseGeocoder(lat,lng).getState(), indent=2))

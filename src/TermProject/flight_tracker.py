@@ -5,6 +5,13 @@ Access to the flight tracker API
 import requests
 from datetime import *
 import json
+from geocoder import ReverseGeocoder
+
+def getFlightTracks(res):
+    return res['flightTracks']
+
+def getPositions(flightTrack):
+    return list(map(lambda p: (p['lat'], p['lon']), flightTrack['positions']))
 
 class FlightTracker:
     def __init__(self, appId, appKey):
@@ -45,6 +52,10 @@ class FlightTracker:
         res = requests.get(url)
         return res.json()
 
+    def getFlightTracksForAirport(self, airport):
+        airportTrack = self.getAirportTrack(airport)
+        return list(map(getPositions, getFlightTracks(airportTrack)))
+
 appId = "8efacea7"
 appKey = "ff4a4e0b9806af76726ca8ab5122cded"
 
@@ -52,6 +63,9 @@ flightTracker = FlightTracker(appId, appKey)
 
 flightStatus = flightTracker.getFlightStatusNow('AA', '100')
 
-print (json.dumps(flightStatus, indent=2))
+tracks = flightTracker.getFlightTracksForAirport('ABQ')
 
-print (json.dumps(flightTracker.getAirportTrack('ABQ'), indent=2))
+for track in tracks:
+    for (lat, lng) in track:
+        geocoder = ReverseGeocoder(lat, lng)
+        print (geocoder.getState())
