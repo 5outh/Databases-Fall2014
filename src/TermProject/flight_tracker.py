@@ -1,3 +1,7 @@
+"""
+Access to the flight tracker API
+"""
+
 import requests
 from datetime import *
 import json
@@ -27,11 +31,28 @@ class FlightTracker:
         now = datetime.now()
         return self.getFlightStatus(carrier, flight, now.year, now.month, now.day)
 
+    def airportTrack(self, airport, carrier=None, maxPositions=None, maxFlights=None):
+        # TODO: Add options
+        url = 'https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/tracks/'
+        url += airport
+        url += '/dep'
+        url += '?appId=' + self.appId + '&appKey=' + self.appKey + '&utc=false'
+        return url
+
+    def getAirportTrack(self, airport, carrier=None, maxPositions=None, maxFlights=None):
+        url = self.airportTrack(airport, carrier, maxPositions, maxFlights)
+        res = requests.get(url)
+        return res.json()
+
+# https://api.flightstats.com/flex/flightstatus/{protocol}/v2/{format}/airport/track/{...}
+
 appId = "8efacea7"
 appKey = "ff4a4e0b9806af76726ca8ab5122cded"
 
 flightTracker = FlightTracker(appId, appKey)
 
-flightStatus = FlightTracker(appId, appKey).getFlightStatusNow('AA', '100')
+flightStatus = flightTracker.getFlightStatusNow('AA', '100')
 
 print (json.dumps(flightStatus, indent=2))
+
+print (json.dumps(flightTracker.getAirportTrack('ABQ'), indent=2))
