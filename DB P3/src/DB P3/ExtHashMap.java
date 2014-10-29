@@ -136,8 +136,14 @@ public class ExtHashMap <K, V>
         classK = _classK;
         classV = _classV;
         hTable = initList(initSize);   // for bucket storage
-        dir    = hTable;   // for bucket access
+        dir    = initList(initSize);   // for bucket access
         mod    = nBuckets = initSize; 
+        for(int i =0; i < initSize; i++)
+        {
+            Bucket b = new Bucket();
+            hTable.add(b);
+            dir.add(b);
+        }
         
     } // constructor
     
@@ -204,38 +210,19 @@ public class ExtHashMap <K, V>
      */
     public V put (K key, V value)
     {	
-    	//out.println("- Attempting to put : " + key);
-    	//print();
-    	//out.println("\tGLOBAL_DEPTH = " + GLOBAL_DEPTH);
         int    i = h (key);
-        //out.println(i);
-     //   out.println("\thashes to : " + i);
         Bucket b = dir.get(i);
-    //    out.println("\tbucket at " + i + " has " + b.nKeys + " keys and depth " + b.depth());
-       // print();
         //If there are as many keys as slots we need to split the bucket
         if(b.nKeys >= SLOTS) {
-        	//check to see if the key already exists, this is necessary because of the recursion that results from calling split
-        	if(b.keyIndexOf(key) < 0){
-        		if(GLOBAL_DEPTH == b.depth()){
-        			doubleDir();
-        		}
-        		else if(GLOBAL_DEPTH > b.depth()){
-        			split(b, i);
-        		}
-        		this.put(key, value);     
-        	}
-        	else{
-        		//do nothing
-        		return null;
-        	}
+        	split(b, key, value);
         }
         
         else{//necessary for recursion	
         	if(b.keyIndexOf(key) < 0){ //make sure it is not already there
-        //		out.println("added");
-	        	b.add(key, value);
-	            count++;
+                    count++;
+	        	b.key[b.nKeys] = key;
+                        b.value[b.nKeys] = value;
+                        return null; 
         	}
         }
         return null;
@@ -248,25 +235,86 @@ public class ExtHashMap <K, V>
      * @param index the index of the full bucket
      * @author Will Pickard + Will Speegle
      */
-    public void split(Bucket b, int index){
-        //Increase the mod function and Htable, then call doubleDir to double the directory size
-        //mod *= 2;
-        //doubleDir();
-    //	out.println("############### SPLIT ###################");
-        Bucket newBucket = incrementHTable();
-        int newBucketIndex = hTable.indexOf(newBucket);
-        dir.add(newBucketIndex, newBucket);
-        
-        b.setDepth(GLOBAL_DEPTH);
-        newBucket.setDepth(GLOBAL_DEPTH);
-        //Re-hash all the values in the bucket
-        for(int i=0; i<b.nKeys; i++){
-        	K key = b.key[i];
-        	int j = h (key);
-        	if(dir.get(j) != b){
-        		V value = b.removeKey(i);
-        		put(key, value);
-        	}
+    public void split(Bucket b, K key, V val){ 
+        if(b.depth() == mod) // bucket is at the newest(max) depth
+        {
+            int size = dir.size();
+            
+            for(int i = 0;i<size; i++)
+            {
+                dir.add(dir.get(i)); //double the dir
+            }
+            int i = h(key); //finds first bucket
+            int j = i + mod; //finds newer bucket
+            mod *=2;
+            Bucket b1 = new Bucket();
+            Bucket b2 = new Bucket();
+            nBuckets++;
+            for(int q= 0; q <hTable.size(); q++) //remove old bucket from hash table
+            {
+                count++;
+                if(hTable.get(q).equals(b))
+                {
+                    hTable.remove(q);
+                    q = hTable.size();
+                }
+            }
+                //remove old buckets and add the new one
+                dir.remove(i);
+                dir.remove(j);
+                dir.add(j, b2);
+                hTable.add(b1);
+                hTable.add(b2);
+                
+            }
+        else{
+            //not at max depth so check the depth
+            int curDepth = b.depth();
+            int i = 0;
+            
+            for(int l = 0; l < dir.size(); l++)
+            {
+                count++;
+                if(b.equals(dir.get(l)))
+                {
+                    i = l;
+                    l = dir.size();
+                }
+            }
+            //make new buckets at the max dpeth
+            Bucket b1 = new Bucket();
+            Bucket b2 = new Bucket();
+            int k = 0;
+            for(int l = 0; l < hTable.size();l++)//remove old bucket from hash table
+            {
+                count++;
+                if(hTable.get(l).equals(b))
+                {
+                    hTable.remove(l);
+                    l = hTable.size();
+                }
+                    }
+            hTable.add(b1);
+            hTable.add(b2);
+            while(i<mod)
+            {
+                if(k%2 == 0)//place the buckets
+                {
+                    dir.remove(i);
+                    dir.add(i, b1);
+                }
+                else{
+                    dir.remove(i);
+                    dir.add(i, b2);
+                }
+                k++;
+                i += curDepth;
+            }
+        }
+        put(key,val);
+        for(int q = 0; q <b.nKeys; q++)
+        {
+            put(b.key[q], b.value[q]);
         }
     }
     /******************************

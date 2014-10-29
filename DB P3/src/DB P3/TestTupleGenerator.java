@@ -225,10 +225,11 @@ public class TestTupleGenerator
     public static void main (String [] args)
     {
         init();
-        //testBpTreeMap(1000, 5000);
-        //testTreeMap(1000, 5000);
-        testExtHashMap(100000, 500000);
-        //testArrayList(1000, 5000);
+       testBpTreeMap(75000, 75000);
+       testTreeMap(75000, 75000);
+       testExtHashMap(75000, 75000);
+       testArrayList(75000, 75000);
+       
     } // main
 
 
@@ -240,7 +241,7 @@ public class TestTupleGenerator
         String [] tables = { "Student", "Professor", "Course", "Teaching", "Transcript" };
         
         // NOTE: We only care about Student and Transcript tables, really...
-        int tups [] = new int [] { studentSize, 0, 0, 0, transcriptSize };
+        int tups [] = new int [] { studentSize, 1,1, 1, transcriptSize };
 
         // Generate tuples
         Comparable [][][] resultTest = test.generate (tups);
@@ -334,7 +335,7 @@ public class TestTupleGenerator
         // Insert into tables
         for (int i = 0; i < resultTest.length; i++) {
             String tableName = tables[i];
-            out.println("\n\ninserting for " + tableName);
+            //out.println("\n\ninserting for " + tableName);
             Table_ExtHashMap table = ExtHashMap.get(tables[i]);
            // if(tableName == "Course"){
             for (int j = 0; j < resultTest [i].length; j++) {
@@ -342,8 +343,8 @@ public class TestTupleGenerator
                 table.insert(tuple);
             } // for
         //    }
-            out.println("\n\nDone inserting " + tables[i] + " \n\n");
-            table.print();
+            //out.println("\n\nDone inserting " + tables[i] + " \n\n");
+            //table.print();
         } // for
         
         // Select 1000 times
@@ -353,7 +354,7 @@ public class TestTupleGenerator
 
         for (int j = 0; j < resultTest[0].length; j++) {
             Comparable[] tuple = resultTest[0][j];
-          //  table.select(t -> t[table.col("id")].equals(tuple[0]));
+           table.select(t -> t[table.col("id")].equals(tuple[0]));
         } // for
 
         long selectTime = System.currentTimeMillis() - startTime;
@@ -362,7 +363,7 @@ public class TestTupleGenerator
 
         // Should be roughly 20% of the table
         startTime = System.currentTimeMillis();
-      //  table.select(t -> t[table.col("id")].compareTo(800000) > 0);
+      table.select(t -> t[table.col("id")].compareTo(800000) > 0);
         long rangeQueryTime = System.currentTimeMillis() - startTime;
 
         out.println("Selecting all students with ids > 800000 took " + rangeQueryTime + " ms");

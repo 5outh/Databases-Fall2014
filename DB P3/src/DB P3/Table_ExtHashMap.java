@@ -7,8 +7,8 @@
 
 import java.io.*;
 import java.util.*;
-//import java.util.function.*;
-//import java.util.stream.*;
+import java.util.function.*;
+import java.util.stream.*;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -170,7 +170,7 @@ public class Table_ExtHashMap
      * @param predicate  the check condition for tuples
      * @return  a table with tuples satisfying the predicate
      */
-    /*
+    
     public Table_ExtHashMap select (Predicate <Comparable []> predicate)
     {
         // NB. Keep the headers the same, but select the ones satisfying the predicate(s)

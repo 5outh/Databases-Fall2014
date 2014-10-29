@@ -167,7 +167,7 @@ public class TupleGeneratorImpl
                             for (x = 0; x < tempAtr.length; x++) {
                                 if (tempAtr[x].equals (fks[n][2])) break;
                             } // for
-                            subResult[j][s] = fkTable[rand.nextInt (fkTable.length)][x];
+                            subResult[j][s] = fkTable[rand.nextInt(Math.abs((fkTable.length)))][x];
 
                         } else {
                             String [] sfks = fks[n][0].split (" ");
