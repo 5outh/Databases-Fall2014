@@ -1,4 +1,3 @@
-from html.parser import HTMLParser
 from collections import defaultdict
 from bs4 import BeautifulSoup
 import requests
