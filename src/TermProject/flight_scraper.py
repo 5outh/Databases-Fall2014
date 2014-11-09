@@ -159,7 +159,7 @@ print ("done getting airports (", len(all_airports), " )")
 
 i = 0;
 for airport in all_airports:
-    print("Fetching statuses for ", airport['airportCode'] , " ( ", (i/num_airports), " )")
+    print("Fetching statuses for ", airport['airportCode'] , " ( ", ( (i/num_airports) * 100 ), " )")
 
     statuses = getFlightStatusByAirport(airport['airportCode'])
 
