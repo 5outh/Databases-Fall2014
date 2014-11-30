@@ -1,0 +1,139 @@
+html, body {
+	overflow-x: hidden;
+}
+
+body{
+	background: #fff;
+	color: #333;
+}
+
+.page-section{
+	
+}
+
+.page-section .page-description{
+	background: #1BBC9B;
+	color: #fff;
+	box-shadow: 0px 0px 10px 13px #333;
+	-moz-box-shadow: 0px 0px 10px 13px #333;
+	-webkit-box-shadow: 0px 0px 10px 1px #333;
+}
+
+.page-section .page-desription h1{
+	
+}
+
+.messages{
+	background: #e6e6e6;
+	text-align: left;
+	padding: 25px 25px;
+}
+
+.messages .message{
+
+}
+
+.data-table {
+	width: 100%;
+}
+
+.data-table th:hover {
+	cursor: pointer;
+	background: #03C9A9;
+} 
+
+.data-table .sorting_desc:after{
+	content: "\2193";
+}
+
+.data-table .sorting_asc:after,
+.data-table .sorting_desc:after {
+	margin-left: 5px;
+}
+.data-table .sorting_asc:after {
+	content: "\2191";
+}
+
+.dataTables_wrapper .paginate_button {
+	margin: 5px;
+}
+.data-table th{
+	text-align: center;
+	padding: 5px 10px;
+}
+.data-table td {
+	text-align: center;
+}
+.data-table thead {
+	background: #1bbc9b;
+	color: #fff;
+}
+
+.data-table tbody tr td {
+	padding: 10px 0px;
+}
+.data-table tbody .even {
+	background: #e6e6e6;
+}
+.control-bar {
+	padding: 10px 15px;
+	background: #e6e6e6;
+}
+.control-bar .trigger {
+	margin: 5px;
+}
+
+.btn {
+	transition: 300ms ease;
+	-webkit-transition: 300ms ease;
+	-moz-transition: 300ms ease;
+}
+
+.btn.btn-submit {
+	background: #3FC380;
+	color: #fff;
+}
+.btn.btn-submit:hover {
+	background: #66CC99;
+	color: #fff;
+}
+
+.btn.btn-update {
+	background: #3498DB;
+	color: #fff;
+}
+.btn.btn-update:hover {
+	background: #59ABE3;
+	color: #fff;
+}
+
+#loader {
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+	
+	background: rgba(255, 255, 255, 0.3);
+}
+
+/*********** FORMS ******************/
+.form-description {
+	font-size: 12px;
+	margin-top: 5px;
+}
+
+/********** TEXT ********************/
+.warning {
+	padding: 7px 15px;
+	background: #E26A6A;
+	border-radius: 5px;
+	color: #fff;
+	border: 2px solid #C0392B;
+	
+	display: none;
+}
+
+.warning-trigger:focus + .warning {
+	display: block;
+}

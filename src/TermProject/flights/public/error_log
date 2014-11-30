@@ -1,0 +1,103 @@
+[04-Nov-2014 17:20:04 UTC] PHP Warning:  Uncaught exception 'ErrorException' with message 'Undefined variable: appID' in /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php:12
+Stack trace:
+#0 /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php(12): Illuminate\Exception\Handler->handleError(8, 'Undefined varia...', '/home1/zeprmedi...', 12, Array)
+#1 [internal function]: FlightTracker->test()
+#2 /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Routing/Controller.php(231): call_user_func_array(Array, Array)
+#3 /home1/zeprmedi/public_html/flights/bootstrap/compiled.php(5776): Illuminate\Routing\Controller->callAction('test', Array)
+#4 /home1/zeprmedi/public_html/flights/bootstrap/compiled.php(5764): Illuminate\Routing\ControllerDispatcher->call(Object(FlightTracker), Object(Illuminate\Routing\Route), 'test')
+#5 /home1/zeprmedi/public_html/flights/bootstrap/compiled.php(4971): Illuminate\Routing\ControllerDispatcher->dispatch(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request), in /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php on line 12
+[04-Nov-2014 17:20:04 UTC] PHP Fatal error:  Cannot access empty property in /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php on line 12
+[04-Nov-2014 17:20:37 UTC] PHP Warning:  Uncaught exception 'ErrorException' with message 'Undefined variable: appID' in /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php:12
+Stack trace:
+#0 /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php(12): Illuminate\Exception\Handler->handleError(8, 'Undefined varia...', '/home1/zeprmedi...', 12, Array)
+#1 [internal function]: FlightTracker->test()
+#2 /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Routing/Controller.php(231): call_user_func_array(Array, Array)
+#3 /home1/zeprmedi/public_html/flights/bootstrap/compiled.php(5776): Illuminate\Routing\Controller->callAction('test', Array)
+#4 /home1/zeprmedi/public_html/flights/bootstrap/compiled.php(5764): Illuminate\Routing\ControllerDispatcher->call(Object(FlightTracker), Object(Illuminate\Routing\Route), 'test')
+#5 /home1/zeprmedi/public_html/flights/bootstrap/compiled.php(4971): Illuminate\Routing\ControllerDispatcher->dispatch(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request), in /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php on line 12
+[04-Nov-2014 17:20:37 UTC] PHP Fatal error:  Cannot access empty property in /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php on line 12
+[04-Nov-2014 18:15:55 UTC] PHP Fatal error:  Cannot use object of type stdClass as array in /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php on line 60
+[04-Nov-2014 23:10:35 UTC] PHP Parse error:  syntax error, unexpected 'Route' (T_STRING) in /home1/zeprmedi/public_html/flights/app/routes.php on line 25
+[04-Nov-2014 23:19:46 UTC] PHP Parse error:  syntax error, unexpected '=>' (T_DOUBLE_ARROW) in /home1/zeprmedi/public_html/flights/app/controllers/UserController.php on line 42
+[04-Nov-2014 23:30:47 UTC] PHP Warning:  Uncaught exception 'ErrorException' with message 'Undefined variable: error' in /home1/zeprmedi/public_html/flights/app/storage/views/0246e640e4c6e659c12fdd0aeec631aa:2
+Stack trace:
+#0 /home1/zeprmedi/public_html/flights/app/storage/views/0246e640e4c6e659c12fdd0aeec631aa(2): Illuminate\Exception\Handler->handleError(8, 'Undefined varia...', '/home1/zeprmedi...', 2, Array)
+#1 /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/View/Engines/PhpEngine.php(37): include('/home1/zeprmedi...')
+#2 /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/View/Engines/CompilerEngine.php(56): Illuminate\View\Engines\PhpEngine->evaluatePath('/home1/zeprmedi...', Array)
+#3 /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/View/View.php(134): Illuminate\View\Engines\CompilerEngine->get('/home1/zeprmedi...', Array)
+#4 /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/View/View.php(102): Illuminate\View\View->getContents()
+#5 /home in /home1/zeprmedi/public_html/flights/app/storage/views/0246e640e4c6e659c12fdd0aeec631aa on line 2
+[04-Nov-2014 23:30:47 UTC] PHP Fatal error:  Call to a member function any() on a non-object in /home1/zeprmedi/public_html/flights/app/storage/views/0246e640e4c6e659c12fdd0aeec631aa on line 2
+[04-Nov-2014 23:55:51 UTC] PHP Warning:  Uncaught exception 'ErrorException' with message 'Undefined variable: flighttracker' in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php:20
+Stack trace:
+#0 /home1/zeprmedi/public_html/flights/app/controllers/DataController.php(20): Illuminate\Exception\Handler->handleError(8, 'Undefined varia...', '/home1/zeprmedi...', 20, Array)
+#1 [internal function]: DataController->update('airports')
+#2 /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Routing/Controller.php(231): call_user_func_array(Array, Array)
+#3 /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(93): Illuminate\Routing\Controller->callAction('update', Array)
+#4 /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(62): Illuminate\Routing\ControllerDispatcher->call(Object(DataController), Object(Illuminate\Routing\Route), 'update')
+#5 /home1/zeprmedi/public_html/flights/vendor/laravel/framewo in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 20
+[04-Nov-2014 23:55:51 UTC] PHP Fatal error:  Call to a member function airportsByCountryCode() on a non-object in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 20
+[05-Nov-2014 00:14:11 UTC] PHP Parse error:  syntax error, unexpected 'return' (T_RETURN) in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 82
+[05-Nov-2014 00:14:31 UTC] PHP Parse error:  syntax error, unexpected 'public' (T_PUBLIC) in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 96
+[05-Nov-2014 00:15:40 UTC] PHP Fatal error:  Cannot use object of type stdClass as array in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 62
+[05-Nov-2014 00:56:03 UTC] PHP Fatal error:  Class 'State' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 46
+[05-Nov-2014 01:10:17 UTC] PHP Fatal error:  Class 'Airport' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 52
+[05-Nov-2014 01:23:23 UTC] PHP Fatal error:  Class '' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 148
+[05-Nov-2014 02:02:00 UTC] PHP Fatal error:  Cannot use object of type stdClass as array in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 89
+[05-Nov-2014 02:12:42 UTC] PHP Parse error:  syntax error, unexpected '{' in /home1/zeprmedi/public_html/flights/app/controllers/Geolocator.php on line 22
+[05-Nov-2014 02:29:04 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php on line 3083
+[05-Nov-2014 02:39:30 UTC] PHP Parse error:  syntax error, unexpected 'new' (T_NEW), expecting identifier (T_STRING) or variable (T_VARIABLE) or '{' or '$' in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 17
+[05-Nov-2014 02:42:10 UTC] PHP Parse error:  syntax error, unexpected '->' (T_OBJECT_OPERATOR), expecting ')' in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 17
+[05-Nov-2014 02:45:34 UTC] PHP Fatal error:  Class 'Logger' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 17
+[05-Nov-2014 02:55:59 UTC] PHP Fatal error:  Class '' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 186
+[05-Nov-2014 05:08:08 UTC] PHP Fatal error:  Class 'Result' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[05-Nov-2014 05:08:12 UTC] PHP Fatal error:  Class 'Tax' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[05-Nov-2014 05:13:43 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home1/zeprmedi/public_html/flights/vendor/nesbot/carbon/src/Carbon/Carbon.php on line 377
+[05-Nov-2014 05:14:21 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Support/NamespacedItemResolver.php on line 25
+[05-Nov-2014 05:14:48 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Support/Str.php on line 63
+[05-Nov-2014 05:15:10 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php on line 2566
+[05-Nov-2014 05:17:31 UTC] PHP Fatal error:  Call to undefined method Illuminate\Database\Eloquent\Collection::getAttributes() in /home1/zeprmedi/public_html/flights/app/storage/views/dfec01c13d088b210235409cd69c287e on line 15
+[05-Nov-2014 05:53:14 UTC] PHP Fatal error:  Class 'AirLine' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[05-Nov-2014 06:15:19 UTC] PHP Parse error:  syntax error, unexpected 'btn' (T_STRING), expecting ')' in /home1/zeprmedi/public_html/flights/app/storage/views/d64f54be0ff33ee9fe6ac147074abe46 on line 25
+[05-Nov-2014 06:15:30 UTC] PHP Parse error:  syntax error, unexpected 'btn' (T_STRING), expecting ')' in /home1/zeprmedi/public_html/flights/app/storage/views/d64f54be0ff33ee9fe6ac147074abe46 on line 25
+[05-Nov-2014 06:15:41 UTC] PHP Parse error:  syntax error, unexpected 'btn' (T_STRING), expecting ')' in /home1/zeprmedi/public_html/flights/app/storage/views/d64f54be0ff33ee9fe6ac147074abe46 on line 25
+[05-Nov-2014 06:23:44 UTC] PHP Fatal error:  Class 'AirLine' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[05-Nov-2014 06:24:19 UTC] PHP Fatal error:  Class 'AirLine' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[05-Nov-2014 06:40:48 UTC] PHP Fatal error:  Cannot access protected property Illuminate\Validation\Validator::$messages in /home1/zeprmedi/public_html/flights/app/controllers/UserController.php on line 25
+[05-Nov-2014 06:41:20 UTC] PHP Fatal error:  Cannot access protected property Illuminate\Validation\Validator::$messages in /home1/zeprmedi/public_html/flights/app/controllers/UserController.php on line 25
+[05-Nov-2014 06:42:08 UTC] PHP Fatal error:  Cannot access protected property Illuminate\Validation\Validator::$messages in /home1/zeprmedi/public_html/flights/app/controllers/UserController.php on line 25
+[05-Nov-2014 15:16:08 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php on line 0
+[05-Nov-2014 16:10:35 UTC] PHP Fatal error:  Class 'Tax' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[05-Nov-2014 16:11:01 UTC] PHP Fatal error:  Class 'Tax' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[05-Nov-2014 16:31:06 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Database/Connection.php on line 389
+[05-Nov-2014 18:39:17 UTC] PHP Fatal error:  Class 'Tax' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[05-Nov-2014 19:00:12 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php on line 908
+[05-Nov-2014 19:19:16 UTC] PHP Fatal error:  Class 'Airplane' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[05-Nov-2014 19:34:08 UTC] PHP Fatal error:  Class 'Airplane' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[05-Nov-2014 19:34:28 UTC] PHP Fatal error:  Class 'Tax' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[05-Nov-2014 19:34:32 UTC] PHP Fatal error:  Class 'Pay' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[06-Nov-2014 04:01:13 UTC] PHP Fatal error:  Class 'Result' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[06-Nov-2014 04:01:21 UTC] PHP Fatal error:  Class 'Results' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[06-Nov-2014 04:04:38 UTC] PHP Fatal error:  Class 'Results' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 214
+[06-Nov-2014 05:58:08 UTC] PHP Parse error:  syntax error, unexpected 'pubic' (T_STRING), expecting function (T_FUNCTION) in /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php on line 67
+[06-Nov-2014 06:01:06 UTC] PHP Fatal error:  Class 'test' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 215
+[06-Nov-2014 06:10:00 UTC] PHP Fatal error:  Cannot use object of type stdClass as array in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 235
+[06-Nov-2014 06:21:32 UTC] PHP Fatal error:  Cannot use object of type stdClass as array in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 110
+[06-Nov-2014 06:22:18 UTC] PHP Parse error:  syntax error, unexpected '/' in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 295
+[06-Nov-2014 06:50:54 UTC] PHP Parse error:  syntax error, unexpected 'print_r' (T_STRING) in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 314
+[06-Nov-2014 07:34:18 UTC] PHP Fatal error:  Cannot redeclare DataController::extractWaypoint() in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 184
+[06-Nov-2014 07:42:04 UTC] PHP Parse error:  syntax error, unexpected 'return' (T_RETURN), expecting function (T_FUNCTION) in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 280
+[06-Nov-2014 08:05:32 UTC] PHP Parse error:  syntax error, unexpected ';' in /home1/zeprmedi/public_html/flights/app/storage/views/a28260567ee93959086b4f9ade1dbd06 on line 37
+[06-Nov-2014 09:22:26 UTC] PHP Fatal error:  Class 'Airplane' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 466
+[06-Nov-2014 09:23:21 UTC] PHP Fatal error:  Class 'Airplane' not found in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 466
+[06-Nov-2014 09:49:30 UTC] PHP Parse error:  syntax error, unexpected ':' in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 89
+[06-Nov-2014 09:53:45 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php on line 135
+[06-Nov-2014 10:07:04 UTC] PHP Fatal error:  Call to undefined function fatal() in /home1/zeprmedi/public_html/flights/app/routes.php on line 5
+[06-Nov-2014 10:09:42 UTC] PHP Fatal error:  Call to undefined function fatal() in /home1/zeprmedi/public_html/flights/app/start/global.php on line 92
+[06-Nov-2014 10:40:23 UTC] PHP Parse error:  syntax error, unexpected 'return' (T_RETURN), expecting function (T_FUNCTION) in /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php on line 144
+[06-Nov-2014 10:40:40 UTC] PHP Parse error:  syntax error, unexpected 'return' (T_RETURN), expecting function (T_FUNCTION) in /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php on line 144
+[06-Nov-2014 10:41:56 UTC] PHP Parse error:  syntax error, unexpected 'return' (T_RETURN), expecting function (T_FUNCTION) in /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php on line 144
+[06-Nov-2014 10:43:10 UTC] PHP Parse error:  syntax error, unexpected 'return' (T_RETURN), expecting function (T_FUNCTION) in /home1/zeprmedi/public_html/flights/app/controllers/FlightTracker.php on line 144
+[06-Nov-2014 10:52:44 UTC] PHP Parse error:  syntax error, unexpected 'case' (T_CASE) in /home1/zeprmedi/public_html/flights/app/controllers/DataController.php on line 534
+[06-Nov-2014 10:56:13 UTC] PHP Fatal error:  Call to undefined method Illuminate\Database\Eloquent\Collection::orderBy() in /home1/zeprmedi/public_html/flights/app/storage/views/a28260567ee93959086b4f9ade1dbd06 on line 28
+[06-Nov-2014 10:58:38 UTC] PHP Fatal error:  Method Illuminate\View\View::__toString() must not throw an exception in /home1/zeprmedi/public_html/flights/app/storage/views/74f5fe469bf55950289b412acf5cf761 on line 0

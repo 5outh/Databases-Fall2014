@@ -63,9 +63,12 @@ flightTracker = FlightTracker(appId, appKey)
 
 flightStatus = flightTracker.getFlightStatusNow('AA', '100')
 
-tracks = flightTracker.getFlightTracksForAirport('ABQ')
+tracks = flightTracker.getFlightTracksForAirport('ATL')
 
 for track in tracks:
+    end = '\n' + ('##########\n' * 3)
+    print ('NEW FLIGHT', end=end)
     for (lat, lng) in track:
         geocoder = ReverseGeocoder(lat, lng)
+        print ((lat, lng))
         print (geocoder.getState())

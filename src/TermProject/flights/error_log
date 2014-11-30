@@ -1,0 +1,4 @@
+[05-Nov-2014 00:58:43 UTC] PHP Fatal error:  Class 'CreateUsersTable' not found in /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php on line 301
+[05-Nov-2014 00:59:01 UTC] PHP Fatal error:  Class 'CreateUsersTable' not found in /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php on line 301
+[05-Nov-2014 01:36:30 UTC] PHP Fatal error:  Class 'AddTimeStamps' not found in /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php on line 301
+[05-Nov-2014 01:36:46 UTC] PHP Fatal error:  Class 'AddTimeStamps' not found in /home1/zeprmedi/public_html/flights/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php on line 301

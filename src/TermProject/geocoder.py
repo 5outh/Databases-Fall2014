@@ -21,7 +21,7 @@ class ReverseGeocoder:
 
     def getState(self):
         res = self.lookupPoint()
-        if(res['status'] == 'ZERO_RESULTS'):
+        if(res['status'] == 'ZERO_RESULTS' || len(res['results']) == 0):
             return None
         for component in res['results'][0]['address_components']:
             types = component['types']
