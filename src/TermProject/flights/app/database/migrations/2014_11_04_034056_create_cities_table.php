@@ -19,6 +19,7 @@ class CreateCitiesTable extends Migration {
 			$table->string("CityName");
 			$table->decimal("lat", 10, 5);
 			$table->decimal("lon", 10, 5);
+            $table->timestamps();
 		});
 	}
 

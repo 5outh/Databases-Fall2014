@@ -16,6 +16,7 @@ class CreateAirplanesTable extends Migration {
 		Schema::create("AirPlanes", function($table){
 			$table->string("AirPlaneCode")->primary();
 			$table->string("AirPlaneName");
+            $table->timestamps();
 		});
 	}
 

@@ -23,6 +23,7 @@ class CreateAirportsTable extends Migration {
 			$table->integer("Zip");
 			$table->string("CityCode")->references("CityCode")->on("Cities");
 			$table->string("StateCode")->references("StateCode")->on("States");
+            $table->timestamps();
 		});
 	}
 

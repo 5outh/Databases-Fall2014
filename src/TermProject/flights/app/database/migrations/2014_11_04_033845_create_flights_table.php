@@ -21,7 +21,12 @@ class CreateFlightsTable extends Migration {
 			$table->string("time_dest");
 			//duration?
 			$table->string("ALCode")->references("ALCode")->on("AirLines");
-			$table->string("AirPlaneCode")->references("AirPlaneCode")->on("AirPlanes");			
+			$table->string("AirPlaneCode")->references("AirPlaneCode")->on("AirPlanes");
+
+            $table->integer("FlightNumber")->default(0);
+            $table->char("Status", 2)->default('unknown');
+
+            $table->timestamps();
 		});
 	}
 

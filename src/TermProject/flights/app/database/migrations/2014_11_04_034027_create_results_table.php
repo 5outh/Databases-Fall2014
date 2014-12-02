@@ -17,6 +17,7 @@ class CreateResultsTable extends Migration {
 			$table->string("FlightId")->references("FlightId")->on("Flights")->unique();
 			$table->decimal("CurrentEarnings", 10, 2);
 			$table->decimal("ProposedEarnings", 10, 2);
+            $table->timestamps();
 		});
 	}
 

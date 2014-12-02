@@ -16,6 +16,7 @@ class CreateStatesTable extends Migration {
 		Schema::create("States", function($table){
 			$table->string("StateCode")->primary();
 			$table->string("StateName");
+            $table->timestamps();
 		});	
 	}
 

@@ -18,6 +18,12 @@ class CreateWaypointsTable extends Migration {
 			$table->string("FlightId")->references("FlightId")->on("Flights")->index();
 			$table->decimal("lat", 10, 5);
 			$table->decimal("lon", 10, 5);
+
+            $table->integer("Speed");
+            $table->integer("Altitude");
+            $table->string("Date");
+
+            $table->timestamps();
 		});
 	}
 

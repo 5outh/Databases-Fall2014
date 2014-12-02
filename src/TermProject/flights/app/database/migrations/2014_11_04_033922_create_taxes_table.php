@@ -19,6 +19,7 @@ class CreateTaxesTable extends Migration {
 			$table->decimal("BracketStart", 10, 2);
 			$table->decimal("BracketEnd", 10, 2);
 			$table->decimal("IncomeTax", 10, 5);
+            $table->timestamps();
 		});
 	}
 

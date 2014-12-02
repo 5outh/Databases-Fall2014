@@ -41,7 +41,7 @@ class UserController extends BaseController {
 	public function login(){
 		$username = Input::get("username");
 		$password = Input::get("password");
-		
+
 		if(Auth::attempt(array("username"=>$username, "password"=>$password))){
 			Logger::make("User", "User " . $username . " successfully logged in");
 			return Redirect::to("admin");
