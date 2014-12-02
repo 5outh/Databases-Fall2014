@@ -45,6 +45,23 @@ def haversine(p1, p2):
     c = 2 * atan2(sqrt(a), sqrt(1-a))
     return EARTH_RADIUS * c
 
+def lerp(p1, p2, num_points):
+    x0, y0 = p1
+    x1, y1 = p2
+
+    startX = min(x0, x1)
+    deltaX = abs(x0 - x1)
+
+    points = []
+
+    for n in range(num_points):
+        x = startX + (deltaX / (num_points - 1)) * n
+        y = y0 + (y1 - y0) * ((x - x0) / (x1 - x0))
+        points.append((x, y))
+
+    return points
+
+
 # Haversine
 # formula:    a = sin²(Δφ/2) + cos φ1 ⋅ cos φ2 ⋅ sin²(Δλ/2)
 # c = 2 ⋅ atan2( √a, √(1−a) )
@@ -88,6 +105,8 @@ for flight in flights:
     destAirport = [ap for ap in cur.fetchall()][0]
 
     flightDistance = haversine(deptAirport, destAirport)
-
+    points = lerp(deptAirport, destAirport, 10)
+    print ((deptAirport, destAirport))
+    print(points)
     cur.execute(getWaypointForFlightIdQuery(flightId))
     waypoints = [waypoint for waypoint in cur.fetchall()]
