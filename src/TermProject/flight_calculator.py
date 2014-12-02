@@ -2,12 +2,17 @@ import cymysql
 from dateutil.parser import parse
 from datetime import datetime, timedelta
 from math import *
+from geocoder import ReverseGeocoder
+import random
 
 ## GLOBALS
 FLIGHT_SPEED = 529 # average mph of a commercial flight
 HOURLY_PAY = 58.73 # hourly pay at 122,161 / year (average)
 DATE_FORMAT = '%I:%M %p - %a %b-%d-%Y'
 EARTH_RADIUS = 3958.761 # average radius of earth
+WAYPOINT_NUMBER = 30 # Number of waypoints to place between source and destination
+
+tax_rates = {} # dynamically populated with state -> tax rate mappings
 
 ## Util functions
 
@@ -24,6 +29,9 @@ def getWaypointForFlightIdQuery(flightId):
         from waypoints
         where FlightId = 
         """ + str(flightId)
+
+def getTaxBracketsForStateQuery(stateCode):
+    return "SELECT BracketStart,BracketEnd,IncomeTax FROM flights.taxes WHERE StateCode='" + stateCode + "'"
 
 def parseDate(dateString):
     return datetime.strptime(
@@ -61,14 +69,6 @@ def lerp(p1, p2, num_points):
 
     return points
 
-
-# Haversine
-# formula:    a = sin²(Δφ/2) + cos φ1 ⋅ cos φ2 ⋅ sin²(Δλ/2)
-# c = 2 ⋅ atan2( √a, √(1−a) )
-# d = R ⋅ c
-# where   φ is latitude, λ is longitude, R is earth’s radius (mean radius = 6,371km);
-# note that angles need to be in radians to pass to trig functions!
-
 conn = cymysql.connect(
     host='127.0.0.1', 
     user='root', 
@@ -96,7 +96,7 @@ for flight in flights:
     time_dest = parseDate(time_dest)
 
     elapsedTime = time_dest - time_dept
-    totalPayFortime = getTotalPayForTime(elapsedTime)
+    totalPayForTime = getTotalPayForTime(elapsedTime)
 
     cur.execute(getAirportCodeQuery(dept))
     deptAirport = [ap for ap in cur.fetchall()][0]
@@ -105,8 +105,44 @@ for flight in flights:
     destAirport = [ap for ap in cur.fetchall()][0]
 
     flightDistance = haversine(deptAirport, destAirport)
-    points = lerp(deptAirport, destAirport, 10)
-    print ((deptAirport, destAirport))
-    print(points)
-    cur.execute(getWaypointForFlightIdQuery(flightId))
-    waypoints = [waypoint for waypoint in cur.fetchall()]
+    waypoints = lerp(deptAirport, destAirport, WAYPOINT_NUMBER)
+    waypointPay = totalPayForTime / WAYPOINT_NUMBER
+
+    totalTax = 0
+
+    for waypoint in waypoints:
+        
+        reverseGeocoder = ReverseGeocoder(*waypoint)
+        stateCode = reverseGeocoder.getState()
+        
+        taxRate = None
+
+        if stateCode in tax_rates:
+            taxRate = tax_rates[stateCode]
+        else:
+            cur.execute(getTaxBracketsForStateQuery(str(stateCode)))
+            brackets = list(cur.fetchall())
+
+            # Set the tax rate for the given state for later
+            for bracket in brackets:
+                lo, hi, rate = bracket
+                if 122161 >= lo:
+                    tax_rates[stateCode] = rate / 100 # Turn percentage into decimal
+                    taxRate = rate / 100
+        
+        if (taxRate is not None):
+            totalTax += taxRate * waypointPay
+
+    if (taxRate is not None):
+        # get a random state code from the list of seen states
+        randomStateCode = random.choice(list(tax_rates.keys()))
+        oldTax = tax_rates[randomStateCode] * totalPayForTime
+
+        print("Old tax for a pilot living in " + str(randomStateCode) + ": " + ("$%.2f" % oldTax))
+        print("Old net pay for a pilot living in " + str(randomStateCode) + ": " + ("$%.2f" % (totalPayForTime - oldTax)))
+
+        print("Base pay: " + ("$%.2f" % totalPayForTime))
+        print("Total tax: " + ("$%.2f" % totalTax))
+        print("Adjusted pay: " + ("$%.2f" % (totalPayForTime - totalTax)))
+
+        print("Tax difference in old taxing policy to new taxing policy: " + ("$%.2f" % (oldTax - totalTax)), end='\n\n')
