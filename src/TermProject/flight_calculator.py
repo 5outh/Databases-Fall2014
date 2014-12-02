@@ -1,6 +1,6 @@
 import cymysql
 from dateutil.parser import parse
-from datetime import datetime
+from datetime import datetime, timedelta
 
 ## GLOBALS
 FLIGHT_SPEED = 529 # average mph of a commercial flight
@@ -41,7 +41,7 @@ cur.execute(
     """
     )
 
-def formatDate(dateString):
+def parseDate(dateString):
     return datetime.strptime(
         dateString.replace(' (runway)', ''),
         DATE_FORMAT
@@ -52,10 +52,12 @@ flights = [flight for flight in cur.fetchall()]
 for flight in flights:
     flightId, dept, dest, time_dept, time_dest = flight
     
-    time_dept = formatDate(time_dept)
-    time_dest = formatDate(time_dest)
+    time_dept = parseDate(time_dept)
+    time_dest = parseDate(time_dest)
 
-    print((time_dept, time_dest))
+    elapsedTime = time_dest - time_dept
+
+    print(elapsedTime)
 
     cur.execute(getAirportCodeQuery(dept))
 
