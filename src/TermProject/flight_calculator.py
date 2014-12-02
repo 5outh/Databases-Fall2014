@@ -114,8 +114,8 @@ for flight in flights:
         
         reverseGeocoder = ReverseGeocoder(*waypoint)
         stateCode = reverseGeocoder.getState()
-        
-        taxRate = None
+
+        taxRate = 0
 
         if stateCode in tax_rates:
             taxRate = tax_rates[stateCode]
@@ -126,23 +126,20 @@ for flight in flights:
             # Set the tax rate for the given state for later
             for bracket in brackets:
                 lo, hi, rate = bracket
-                if 122161 >= lo:
+                if 122161 > lo:
                     tax_rates[stateCode] = rate / 100 # Turn percentage into decimal
                     taxRate = rate / 100
-        
-        if (taxRate is not None):
-            totalTax += taxRate * waypointPay
+        totalTax += taxRate * waypointPay
 
-    if (taxRate is not None):
-        # get a random state code from the list of seen states
-        randomStateCode = random.choice(list(tax_rates.keys()))
-        oldTax = tax_rates[randomStateCode] * totalPayForTime
+    # get a random state code from the list of seen states
+    randomStateCode = random.choice(list(tax_rates.keys()))
+    oldTax = tax_rates[randomStateCode] * totalPayForTime
 
-        print("Old tax for a pilot living in " + str(randomStateCode) + ": " + ("$%.2f" % oldTax))
-        print("Old net pay for a pilot living in " + str(randomStateCode) + ": " + ("$%.2f" % (totalPayForTime - oldTax)))
+    print("Old tax for a pilot living in " + str(randomStateCode) + ": " + ("$%.2f" % oldTax))
+    print("Old net pay for a pilot living in " + str(randomStateCode) + ": " + ("$%.2f" % (totalPayForTime - oldTax)))
 
-        print("Base pay: " + ("$%.2f" % totalPayForTime))
-        print("Total tax: " + ("$%.2f" % totalTax))
-        print("Adjusted pay: " + ("$%.2f" % (totalPayForTime - totalTax)))
+    print("Base pay: " + ("$%.2f" % totalPayForTime))
+    print("Total tax: " + ("$%.2f" % totalTax))
+    print("Adjusted pay: " + ("$%.2f" % (totalPayForTime - totalTax)))
 
-        print("Tax difference in old taxing policy to new taxing policy: " + ("$%.2f" % (oldTax - totalTax)), end='\n\n')
+    print("Tax difference in old taxing policy to new taxing policy: " + ("$%.2f" % (oldTax - totalTax)))
