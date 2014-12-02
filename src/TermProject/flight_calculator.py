@@ -27,6 +27,13 @@ def getAirportCodeQuery(apCode):
         " LIMIT 1"
     ])
 
+def getWaypointForFlightIdQuery(flightId):
+    return """
+        select *
+        from waypoints
+        where FlightId = 
+        """ + str(flightId)
+
 for flight in flights:
     flightId, dept, dest, time_dept, time_dest = flight
     
@@ -43,13 +50,7 @@ for flight in flights:
     print(deptAirport)
     print(destAirport)
 
-    cur.execute(
-        """
-        select *
-        from waypoints
-        where FlightId = 
-        """ + str(flightId)
-    )
+    cur.execute(getWaypointForFlightIdQuery(flightId))
 
     waypoints = [waypoint for waypoint in cur.fetchall()]
 
